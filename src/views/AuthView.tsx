@@ -24,6 +24,7 @@ const FormTitle = styled.h3`
   margin: 0;
   font-size: 16px;
   color: #fff;
+  user-select: none;
 `
 const FormToggle = styled.span`
   float: right;
@@ -144,7 +145,7 @@ const AuthView = () => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
-            登录
+            {isLogin ? '登录' : '注册'}
           </Button>
         </Form.Item>
 
