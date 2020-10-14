@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { Form, Input, Button } from 'antd'
+import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
 
 import makeValidator, { Strategy } from '../helpers/validator'
+import authApi from '../api/auth'
 
 const FormWrapper = styled.section`
   display: flex;
@@ -46,10 +47,12 @@ const AuthView = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPw, setShowConfirmPw] = useState(false)
   
   function formToggle () {
+    if (isSubmitting) return
     initialForm()
     setIsLogin(!isLogin)
   }
@@ -77,28 +80,39 @@ const AuthView = () => {
   }
 
   function handleSubmit () {
+    const errorMsg = normalDataCheck()
+    if (errorMsg) {
+      return alert(errorMsg)
+    }
+
+    setIsSubmitting(true)
+    
     if (isLogin) {
       signIn()
     } else {
+      if (password !== confirmPw) {
+        setIsSubmitting(false)
+        return alert('密码不一致')
+      }
       signUp()
     }
   }
 
   function signIn () {
-    const errorMsg = normalDataCheck()
-    if (errorMsg) {
-      return alert(errorMsg)
-    }
+    authApi.signIn({ username, password }).then(result => {
+      console.log('sign-in : ', result)
+    }).catch(errorMsg => {
+      message.error(errorMsg)
+    }).finally(() => setIsSubmitting(false))
   }
 
   function signUp () {
-    const errorMsg = normalDataCheck()
-    if (errorMsg) {
-      return alert(errorMsg)
-    }
-    if (password !== confirmPw) {
-      return alert('密码不一致')
-    }
+    authApi.signUp({ username, password }).then(result => {
+      message.success('注册成功')
+      initialForm()
+    }).catch(errorMsg => {
+      message.error(errorMsg)
+    }).finally(() => setIsSubmitting(false))
   }
 
   return (
@@ -144,7 +158,7 @@ const AuthView = () => {
         }
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" block>
+          <Button loading={isSubmitting} type="primary" htmlType="submit" block>
             {isLogin ? '登录' : '注册'}
           </Button>
         </Form.Item>
