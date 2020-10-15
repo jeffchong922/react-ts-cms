@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
 
-import makeValidator, { Strategy } from '../helpers/validator'
 import authApi from '../api/auth'
+import makeValidator, { Strategy } from '../helpers/validator'
 
 const FormWrapper = styled.section`
   display: flex;
@@ -32,6 +32,9 @@ const FormToggle = styled.span`
   color: rgba(255, 255, 255, 0.3);
   user-select: none;
   cursor: pointer;
+`
+const FormItemHelper = styled.span`
+  color: #afb2b5;
 `
 
 function renderEyeNode (isShow: boolean, callback: () => void ): React.ReactNode {
@@ -79,10 +82,21 @@ const AuthView = () => {
     return validator.start()
   }
 
+  function confirmDataCheck () {
+    return password !== confirmPw
+      ? '输入密码不一致'
+      : ''
+  }
+
   function handleSubmit () {
     const errorMsg = normalDataCheck()
     if (errorMsg) {
       return alert(errorMsg)
+    }
+
+    const confirmError = isLogin || confirmDataCheck()
+    if (confirmError && typeof confirmError !== 'boolean') {
+      return alert(confirmError)
     }
 
     setIsSubmitting(true)
@@ -90,10 +104,6 @@ const AuthView = () => {
     if (isLogin) {
       signIn()
     } else {
-      if (password !== confirmPw) {
-        setIsSubmitting(false)
-        return alert('密码不一致')
-      }
       signUp()
     }
   }
@@ -109,7 +119,8 @@ const AuthView = () => {
   function signUp () {
     authApi.signUp({ username, password }).then(result => {
       message.success('注册成功')
-      initialForm()
+      setIsSubmitting(false)
+      formToggle()
     }).catch(errorMsg => {
       message.error(errorMsg)
     }).finally(() => setIsSubmitting(false))
@@ -123,35 +134,35 @@ const AuthView = () => {
       </FormHeader>
 
       <Form onFinish={handleSubmit}>
-        <Form.Item>
+        <Form.Item help={<FormItemHelper>邮箱格式</FormItemHelper>}>
           <Input prefix={<UserOutlined />} placeholder="Username"
             value={username}
-            onChange={e => setUsername(e.target.value)}
+            onChange={e => setUsername(e.target.value.trim())}
           />
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item help={<FormItemHelper>6~18位有效字符</FormItemHelper>}>
           <Input
             prefix={<LockOutlined />}
             suffix={renderEyeNode(showPassword, () => {setShowPassword(!showPassword)})}
             type={showPassword ? 'text' : 'password'}
             placeholder="Password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value.trim())}
           />
         </Form.Item>
 
         {
           // 注册账户时添加密码确认输入框
           !isLogin && (
-            <Form.Item>
+            <Form.Item help={<FormItemHelper>6~18位有效字符</FormItemHelper>}>
               <Input
                 prefix={<LockOutlined />}
                 suffix={renderEyeNode(showConfirmPw, () => {setShowConfirmPw(!showConfirmPw)})}
                 type={showConfirmPw ? 'text' : 'password'}
                 placeholder="ConfirmPassword"
                 value={confirmPw}
-                onChange={e => setConfirmPw(e.target.value)}
+                onChange={e => setConfirmPw(e.target.value.trim())}
               />
             </Form.Item>
           )

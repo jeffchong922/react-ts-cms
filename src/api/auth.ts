@@ -1,6 +1,6 @@
 import makeRequestClient, { requestRejected } from "../helpers/request";
 
-const url = process.env.REACT_APP_AUTH_BASE_URL || 'http://localhost:8080'
+const url = process.env.REACT_APP_AUTH_BASE_URL || 'http://localhost:8090'
 
 const client = makeRequestClient({ baseURL: url })
 
