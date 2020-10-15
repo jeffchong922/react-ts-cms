@@ -1,5 +1,6 @@
 import React from 'react'
 import { Menu } from 'antd'
+import { Link } from 'react-router-dom'
 
 interface MenuRoute {
   key: string;
@@ -8,7 +9,7 @@ interface MenuRoute {
 }
 
 function renderMenuItem ({ key, title }: MenuRoute) {
-  return <Menu.Item key={key}>{title}</Menu.Item>
+  return <Menu.Item key={key}><Link to={key}>{title}</Link></Menu.Item>
 }
 
 function renderSubMenu ({ key, title, child }: MenuRoute) {

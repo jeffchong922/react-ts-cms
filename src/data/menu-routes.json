@@ -9,21 +9,25 @@
     "child": [
       {
         "title": "添加用户",
-        "key": "/user"
+        "key": "/user/add"
+      },
+      {
+        "title": "添加用户",
+        "key": "/user/list"
       }
     ]
   },
   {
     "title": "部门管理",
-    "key": "/category",
+    "key": "/department",
     "child": [
       {
         "title": "添加列表",
-        "key": "/category/add"
+        "key": "/department/add"
       },
       {
         "title": "部门列表",
-        "key": "/category/list"
+        "key": "/department/list"
       }
     ]
   },

@@ -1,26 +1,37 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import AuthView from '../views/AuthView'
-import FOFView from '../views/FOFView'
 import MainView from '../views/MainView'
 
 import GreetView from '../views/GreetView'
+import DashboardView from '../views/DashboardView'
+import UserAddView from '../views/user/AddView'
+import UserListView from '../views/user/ListView'
+import DepartmentAddView from '../views/department/AddView'
+import DepartmentListView from '../views/department/ListView'
+import TakeOffView from '../views/TakeOffView'
+import OvertimeView from '../views/OvertimeView'
 
 import PrivateRoute from '../components/PrivateRoute'
 import token from '../helpers/token'
 
 const routes = (
   <Switch>
-    {/* <Route exact path='/' component={MainView}/> */}
-    <PrivateRoute exact path='/' isAuthenticated={token.getToken() ? true : false}>
+    <Route path='/auth' component={AuthView}/>
+    <PrivateRoute path='/' isAuthenticated={token.getToken() ? true : false}>
       <MainView>
         <Switch>
+          <Route path='/dashboard'><DashboardView/></Route>
+          <Route path='/user/add' component={UserAddView} />
+          <Route path='/user/list' component={UserListView} />
+          <Route path='/department/add' component={DepartmentAddView} />
+          <Route path='/department/list' component={DepartmentListView} />
+          <Route path='/take-off' component={TakeOffView} />
+          <Route path='/overtime' component={OvertimeView} />
           <Route component={GreetView}/>
         </Switch>
       </MainView>
     </PrivateRoute>
-    <Route path='/auth' component={AuthView}/>
-    <Route component={FOFView} />
   </Switch>
 )
 
