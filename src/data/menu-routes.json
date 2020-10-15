@@ -1,0 +1,38 @@
+[
+  {
+    "title": "控制台",
+    "key": "/dashboard"
+  },
+  {
+    "title": "用户管理",
+    "key": "/user",
+    "child": [
+      {
+        "title": "添加用户",
+        "key": "/user"
+      }
+    ]
+  },
+  {
+    "title": "部门管理",
+    "key": "/category",
+    "child": [
+      {
+        "title": "添加列表",
+        "key": "/category/add"
+      },
+      {
+        "title": "部门列表",
+        "key": "/category/list"
+      }
+    ]
+  },
+  {
+    "title": "请假",
+    "key": "/take-off"
+  },
+  {
+    "title": "加班",
+    "key": "/overtime"
+  }
+]
