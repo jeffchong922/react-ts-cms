@@ -1,6 +1,6 @@
 import React from 'react'
 import { Menu } from 'antd'
-import { Link } from 'react-router-dom'
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom'
 
 interface MenuRoute {
   key: string;
@@ -26,12 +26,17 @@ function renderSubMenu ({ key, title, child }: MenuRoute) {
   )
 }
 
-interface AsideMenuProps {
+interface AsideMenuProps extends RouteComponentProps {
   menuRoutes: Array<MenuRoute>
 }
-const AsideMenu: React.FC<AsideMenuProps> = ({ menuRoutes }) => {
+const AsideMenu: React.FC<AsideMenuProps> = ({ menuRoutes, location }) => {
   return (
-    <Menu theme="dark" mode="inline">
+    <Menu
+      theme="dark"
+      mode="inline"
+      defaultOpenKeys={menuRoutes.map(route => route.child ? route.key : '').filter(_ => _)}
+      selectedKeys={[location.pathname]}
+    >
       {
         menuRoutes.map(route => (
           route.child
@@ -43,4 +48,4 @@ const AsideMenu: React.FC<AsideMenuProps> = ({ menuRoutes }) => {
   )
 }
 
-export default AsideMenu
+export default withRouter(AsideMenu)
