@@ -17,6 +17,7 @@ body {
 }
 
 .layout-main {
+  position: relative;
   margin-left: 250px;
   min-height: 100vh;
 }
