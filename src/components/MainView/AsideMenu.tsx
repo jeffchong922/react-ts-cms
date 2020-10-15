@@ -1,20 +1,30 @@
 import React from 'react'
 import { Menu } from 'antd'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom'
+import * as allIcons from '@ant-design/icons';
 
 interface MenuRoute {
   key: string;
+  icon: string;
   title: string;
   child?: Array<MenuRoute>
 }
 
-function renderMenuItem ({ key, title }: MenuRoute) {
-  return <Menu.Item key={key}><Link to={key}>{title}</Link></Menu.Item>
+/**
+ * 动态生成 icon
+ */
+function renderIcon (iconName: string) {
+  const NewIcon = (allIcons as any)[iconName]
+  return React.createElement(NewIcon)
 }
 
-function renderSubMenu ({ key, title, child }: MenuRoute) {
+function renderMenuItem ({ key, title, icon }: MenuRoute) {
+  return <Menu.Item icon={renderIcon(icon)} key={key}><Link to={key}>{title}</Link></Menu.Item>
+}
+
+function renderSubMenu ({ key, title, child, icon }: MenuRoute) {
   return (
-    <Menu.SubMenu key={key} title={title}>
+    <Menu.SubMenu icon={renderIcon(icon)} key={key} title={title}>
       {
         child!.map(route => (
           route.child

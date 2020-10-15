@@ -11,13 +11,13 @@ body {
 
 .layout-aside {
   position: fixed;
+  z-index: 99;
   height: 100vh;
   overflow: auto;
   left: 0;
 }
 
 .layout-main {
-  position: relative;
   margin-left: 250px;
   min-height: 100vh;
 }
