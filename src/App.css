@@ -20,10 +20,25 @@ body {
   margin-left: 250px;
   min-height: 100vh;
 }
+.layout-main.is-collapsed {
+  margin-left: 80px;
+}
+
+.layout-menu-trigger {
+  font-size: 25px;
+  padding: 10px;
+  transition: color 0.3s;
+}
+.layout-menu-trigger:hover {
+  color: #1890ff;
+}
 
 .layout-header {
   position: relative;
+  display: flex;
+  align-items: center;
   height: 75px;
+  padding: 0 30px;
   background-color: #fff;
   box-shadow: 0 3px 16px 0 rgba(0, 0, 0, .1);
 }
