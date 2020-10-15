@@ -15,7 +15,7 @@ const LogoWrapper = styled.div`
   background-color: #1a2d3f;
 `
 
-const MainView = () => {
+const MainView: React.FC = ({ children }) => {
   return (
     <Layout>
       <Sider width='250' className='layout-aside'>
@@ -26,7 +26,9 @@ const MainView = () => {
         <Header className='layout-header'>
           头部
         </Header>
-        <Content className='layout-content'>主体内容</Content>
+        <Content className='layout-content'>
+          {children}
+        </Content>
       </Layout>
     </Layout>
   )
