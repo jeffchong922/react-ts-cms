@@ -1,10 +1,13 @@
 import React from 'react'
 
+import departmentApi from '../../api/department'
+import NewDepartmentForm from '../../components/DepartmentView/NewDepartmentForm'
+
 const DepartmentAddView = () => {
   return (
-    <div>
-      添加部门
-    </div>
+    <>
+      <NewDepartmentForm addDepartment={departmentApi.add}/>
+    </>
   )
 }
 

@@ -16,7 +16,7 @@
       },
       {
         "icon": "UnorderedListOutlined",
-        "title": "添加用户",
+        "title": "用户列表",
         "key": "/user/list"
       }
     ]
@@ -28,7 +28,7 @@
     "child": [
       {
         "icon": "AppstoreAddOutlined",
-        "title": "添加列表",
+        "title": "添加部门",
         "key": "/department/add"
       },
       {
