@@ -5,6 +5,7 @@ import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeOutlined } from '@
 
 import { ISignInResult, ISignUpResult, IUserInfo } from '../../api/auth'
 import makeValidator, { Strategy } from '../../helpers/validator'
+import Token from '../../helpers/token'
 
 const FormItemHelper = styled.span`
   color: #afb2b5;
@@ -87,6 +88,7 @@ const FormContent: React.FC<FormContentProps> = ({ signIn, signUp, isLogin }) =>
   function handleSignIn () {
     signIn({ username, password }).then(result => {
       console.log('sign-in token : ', result.token)
+      Token.setToken(result.token)
     }).catch(errorMsg => {
       message.error(errorMsg)
     }).finally(() => setIsSubmitting(false))
