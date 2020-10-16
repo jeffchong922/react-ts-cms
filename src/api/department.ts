@@ -7,7 +7,7 @@ const client = makeRequestClient({ baseURL: url })
 
 export interface INewDepartment {
   name: string;
-  memberSize: number;
+  memberCount: number;
   status: boolean;
   introduction: string;
 }

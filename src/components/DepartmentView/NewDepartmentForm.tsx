@@ -12,14 +12,14 @@ interface NewDepartmentFormProps {
 }
 const NewDepartmentForm: React.FC<NewDepartmentFormProps> = ({ addDepartment }) => {
   const [name, setName, resetName] = useInput<string>('')
-  const [memberSize, setMemberSize, resetMemberSize] = useInput<number>(0)
+  const [memberCount, setMemberCount, resetMemberCount] = useInput<number>(0)
   const [status, setStatus, resetStatus] = useInput<boolean>(true)
   const [introduction, setIntroduction, resetIntroduction] = useInput<string>('')
   const [isSubmitting, submitting, submitted ] = useBoolean(false)
 
   function initialForm () {
     resetName()
-    resetMemberSize()
+    resetMemberCount()
     resetStatus()
     resetIntroduction()
   }
@@ -45,7 +45,7 @@ const NewDepartmentForm: React.FC<NewDepartmentFormProps> = ({ addDepartment }) 
 
     addDepartment({
       name,
-      memberSize,
+      memberCount,
       status,
       introduction
     }).then(() => {
@@ -70,8 +70,8 @@ const NewDepartmentForm: React.FC<NewDepartmentFormProps> = ({ addDepartment }) 
       <Form.Item>
         <LabelInput label='人员数量'>
           <InputNumber
-            value={memberSize}
-            onChange={val => typeof val === 'number' && setMemberSize({target:{value: val}})}
+            value={memberCount}
+            onChange={val => typeof val === 'number' && setMemberCount({target:{value: val}})}
             type='number'
             min={0}
             max={100}
