@@ -2,7 +2,14 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } f
 import Token from './token'
 
 interface IClient extends AxiosInstance {
-  postWithToken: <T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<R>
+  postWithToken: <T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<R>;
+  getWithToken: <T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig) => Promise<R>;
+}
+
+function mergeToken (config?: AxiosRequestConfig) {
+  let shallowCopy = Object.assign({}, config)
+  shallowCopy.headers = Object.assign({}, shallowCopy.headers, { Authorization: `Bearer ${Token.getToken()}` })
+  return shallowCopy
 }
 
 interface IClientMap {
@@ -21,17 +28,13 @@ function makeRequestClient ({ baseURL }: IMakeRequestClient) {
     }) as IClient
 
     client.postWithToken = function (url: string, data = null, config?: AxiosRequestConfig) {
-      if (config) {
-        config.headers = Object.assign({}, config.headers, { Authorization: `Bearer ${Token.getToken()}` })
-      }
-      else {
-        config = {
-          headers: {
-            Authorization: `Bearer ${Token.getToken()}`
-          }
-        }
-      }
+      config = mergeToken(config)
       return this.post(url, data, config)
+    }
+
+    client.getWithToken = function (url: string, config?: AxiosRequestConfig) {
+      config = mergeToken(config)
+      return this.get(url, config)
     }
     
     clientMap[baseURL] = client as IClient
