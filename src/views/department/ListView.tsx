@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Button, message, Switch, Table } from 'antd'
+import { message, Switch, Table } from 'antd'
 
 import departmentApi, { IFetchDepartmentsResult } from '../../api/department'
 import { ColumnsType } from 'antd/lib/table'
-import showConfirmModal from '../../components/show-confirm'
 import ListSearchForm from '../../components/DepartmentView/ListSearchForm'
+import OperationBtnGroup from '../../components/DepartmentView/OperationBtnGroup'
 
-const OperationBtnWrapper = styled.div`
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  align-content: space-around;
-`
+
 const ListViewWrapper = styled.div`
   min-height: 100%;
   display: flex;
@@ -51,16 +46,15 @@ const columns: ColumnsType<IDepartmentTableData> = [
     key: 'operation',
     width: 180,
     render: (val, rowData) => (
-      <OperationBtnWrapper>
-        <Button type='primary'>编辑</Button>
-        <Button type='primary' onClick={() => {
-          showConfirmModal({ dataName: rowData.name, wantToDo: () => {
-            return departmentApi.delete({ id: rowData.key })
-              .then(result => console.log(result))
-              .catch(errMsg => console.log(errMsg))
-          } })
-        }} danger>删除</Button>
-      </OperationBtnWrapper>
+      <OperationBtnGroup
+        deleteName={rowData.name}
+        editFunc={() => { console.log(1) }}
+        deleteFunc={() => {
+          return departmentApi.delete({ id: rowData.key })
+            .then(result => console.log(result))
+            .catch(errMsg => console.log(errMsg))
+        }}
+      />
     )
   }
 ]
