@@ -1,27 +1,50 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
 
 import LabelInput from './LabelInput'
-import useInput from '../../hooks/useInput'
-import { INewDepartment } from '../../api/department'
 import makeValidator, { Strategy } from '../../helpers/validator'
 import useBoolean from '../../hooks/useBoolean'
 
-interface NewDepartmentFormProps {
-  addDepartment: (departmentInfo: INewDepartment) => Promise<any>
+export interface InitialFormFields {
+  name?: string;
+  memberCount?: number;
+  status?: boolean;
+  introduction?: string;
 }
-const NewDepartmentForm: React.FC<NewDepartmentFormProps> = ({ addDepartment }) => {
-  const [name, setName, resetName] = useInput<string>('')
-  const [memberCount, setMemberCount, resetMemberCount] = useInput<number>(0)
-  const [status, setStatus, resetStatus] = useInput<boolean>(true)
-  const [introduction, setIntroduction, resetIntroduction] = useInput<string>('')
-  const [isSubmitting, submitting, submitted ] = useBoolean(false)
+export interface SubmitData {
+  name: string;
+  memberCount: number;
+  status: boolean;
+  introduction: string;
+}
+interface NewDepartmentFormProps {
+  initialFormFields?: InitialFormFields;
+  onSubmit: (data: SubmitData) => Promise<any>;
+}
+const NewDepartmentForm: React.FC<NewDepartmentFormProps> = (props) => {
+  const {
+    onSubmit,
+    initialFormFields = {}
+  } = props
+
+  const [name, setName] = useState<string>(initialFormFields.name || '')
+  const [memberCount, setMemberCount] = useState<number>(initialFormFields.memberCount || 0)
+  const [status, setStatus] = useState<boolean>(initialFormFields.status || true)
+  const [introduction, setIntroduction] = useState<string>(initialFormFields.introduction ||'')
+  const [isSubmitting, submitting, submitted] = useBoolean(false)
+
+  useEffect(() => {
+    initialFormFields.name && setName(initialFormFields.name)
+    initialFormFields.memberCount && setMemberCount(initialFormFields.memberCount)
+    initialFormFields.status && setStatus(initialFormFields.status)
+    initialFormFields.introduction && setIntroduction(initialFormFields.introduction)
+  }, [initialFormFields])
 
   function initialForm () {
-    resetName()
-    resetMemberCount()
-    resetStatus()
-    resetIntroduction()
+    setName('')
+    setMemberCount(0)
+    setStatus(true)
+    setIntroduction('')
   }
 
   function dataCheck () {
@@ -43,17 +66,10 @@ const NewDepartmentForm: React.FC<NewDepartmentFormProps> = ({ addDepartment }) 
 
     submitting()
 
-    addDepartment({
-      name,
-      memberCount,
-      status,
-      introduction
-    }).then(() => {
-      message.success('创建成功')
-      initialForm()
-    }).catch(errMsg => {
-      message.error(errMsg)
-    }).finally(submitted)
+    onSubmit({
+      name, status, memberCount, introduction
+    }).then(initialForm)
+      .finally(submitted)
   }
 
   return (
@@ -64,14 +80,14 @@ const NewDepartmentForm: React.FC<NewDepartmentFormProps> = ({ addDepartment }) 
           lg: 10,
           xl: 5
         }}>
-          <Input allowClear type='text' value={name} onChange={setName} />
+          <Input allowClear type='text' value={name} onChange={e => setName(e.target.value)} />
         </LabelInput>
       </Form.Item>
       <Form.Item>
         <LabelInput label='人员数量'>
           <InputNumber
             value={memberCount}
-            onChange={val => typeof val === 'number' && setMemberCount({target:{value: val}})}
+            onChange={val => typeof val === 'number' && setMemberCount(val)}
             type='number'
             min={0}
             max={100}
@@ -80,7 +96,7 @@ const NewDepartmentForm: React.FC<NewDepartmentFormProps> = ({ addDepartment }) 
       </Form.Item>
       <Form.Item>
         <LabelInput label='禁/启用'>
-          <Radio.Group onChange={e => setStatus({target:{value: e.target.value}})} value={status}>
+          <Radio.Group onChange={e => setStatus(e.target.value)} value={status}>
             <Radio value={false}>禁用</Radio>
             <Radio value={true}>启用</Radio>
           </Radio.Group>
@@ -88,7 +104,7 @@ const NewDepartmentForm: React.FC<NewDepartmentFormProps> = ({ addDepartment }) 
       </Form.Item>
       <Form.Item>
         <LabelInput label='描述'>
-          <Input.TextArea allowClear value={introduction} onChange={setIntroduction} rows={5}/>
+          <Input.TextArea allowClear value={introduction} onChange={e => setIntroduction(e.target.value)} rows={5}/>
         </LabelInput>
       </Form.Item>
       <Form.Item>

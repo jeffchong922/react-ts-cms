@@ -19,6 +19,13 @@ export interface IFetchDepartments {
 export interface IDeleteDepartment {
   id: string;
 }
+export interface IUpdateDepartment {
+  id: string;
+  name?: string;
+  memberCount?: number;
+  status?: boolean;
+  introduction?: string;
+}
 
 export interface IAddDepartmentResult {
   inserted: {
@@ -73,6 +80,10 @@ export default Object.freeze({
         departId: id
       }
     })
+      .then(res => res.data, requestRejected())
+  },
+  update (updateDepartmentInfo: IUpdateDepartment) {
+    return client.putWithToken('/departments', updateDepartmentInfo)
       .then(res => res.data, requestRejected())
   }
 })

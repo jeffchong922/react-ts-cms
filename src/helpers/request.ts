@@ -5,6 +5,7 @@ interface IClient extends AxiosInstance {
   postWithToken: <T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<R>;
   getWithToken: <T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig) => Promise<R>;
   deleteWithToken: <T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig) => Promise<R>;
+  putWithToken: <T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<R>;
 }
 
 function mergeToken (config?: AxiosRequestConfig) {
@@ -41,6 +42,11 @@ function makeRequestClient ({ baseURL }: IMakeRequestClient) {
     client.deleteWithToken = function (url: string, config?: AxiosRequestConfig) {
       config = mergeToken(config)
       return this.delete(url, config)
+    }
+
+    client.putWithToken = function (url: string, data = null, config?: AxiosRequestConfig) {
+      config = mergeToken(config)
+      return this.put(url, data, config)
     }
     
     clientMap[baseURL] = client as IClient
