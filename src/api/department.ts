@@ -16,6 +16,9 @@ export interface IFetchDepartments {
   pageNumber?: number;
   pageSize?: number;
 }
+export interface IDeleteDepartment {
+  id: string;
+}
 
 export interface IAddDepartmentResult {
   inserted: {
@@ -42,6 +45,12 @@ export interface IFetchDepartmentsResult {
     total: number;
   }
 }
+interface IDeleteDepartmentResult {
+  deleted: {
+    deleteCount: number;
+    message: string;
+  }
+}
 export default Object.freeze({
   add (departmentInfo: INewDepartment) {
     return client.postWithToken<IAddDepartmentResult>('/departments', departmentInfo)
@@ -56,6 +65,14 @@ export default Object.freeze({
       }
     }
     return client.getWithToken<IFetchDepartmentsResult>('/departments', config)
+      .then(res => res.data, requestRejected())
+  },
+  delete ({ id }: IDeleteDepartment) {
+    return client.deleteWithToken<IDeleteDepartmentResult>('/departments', {
+      params: {
+        departId: id
+      }
+    })
       .then(res => res.data, requestRejected())
   }
 })

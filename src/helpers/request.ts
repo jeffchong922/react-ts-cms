@@ -4,6 +4,7 @@ import Token from './token'
 interface IClient extends AxiosInstance {
   postWithToken: <T = any, R = AxiosResponse<T>>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<R>;
   getWithToken: <T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig) => Promise<R>;
+  deleteWithToken: <T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig) => Promise<R>;
 }
 
 function mergeToken (config?: AxiosRequestConfig) {
@@ -35,6 +36,11 @@ function makeRequestClient ({ baseURL }: IMakeRequestClient) {
     client.getWithToken = function (url: string, config?: AxiosRequestConfig) {
       config = mergeToken(config)
       return this.get(url, config)
+    }
+
+    client.deleteWithToken = function (url: string, config?: AxiosRequestConfig) {
+      config = mergeToken(config)
+      return this.delete(url, config)
     }
     
     clientMap[baseURL] = client as IClient
