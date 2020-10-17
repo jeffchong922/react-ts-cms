@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Button, Form, Input, message, Switch, Table } from 'antd'
+import { Button, message, Switch, Table } from 'antd'
 
 import departmentApi, { IFetchDepartmentsResult } from '../../api/department'
 import { ColumnsType } from 'antd/lib/table'
 import showConfirmModal from '../../components/show-confirm'
+import ListSearchForm from '../../components/DepartmentView/ListSearchForm'
 
 const OperationBtnWrapper = styled.div`
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
   align-content: space-around;
+`
+const ListViewWrapper = styled.div`
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+`
+const ListViewHeader = styled.header`
+  margin-bottom: 30px;
+`
+const ListViewContent = styled.main`
+  flex: 1;
 `
 
 interface IDepartmentTableData {
@@ -64,7 +76,9 @@ function makeDataSource (fetchedResult: IFetchDepartmentsResult): IDepartmentTab
 
 const DepartmentListView = () => {
   const [dataSource, setDataSource] = useState<Array<IDepartmentTableData>>([])
-  function handleSubmit () {
+
+  function handleSubmit (searchText: string) {
+    console.log(searchText)
   }
 
   useEffect(() => {
@@ -75,17 +89,14 @@ const DepartmentListView = () => {
       .catch(errMsg => message.error(errMsg))
   }, [])
   return (
-    <>
-      <Form onFinish={handleSubmit} colon={false} layout='inline'>
-        <Form.Item label='部门名称'>
-          <Input placeholder='请输入部门名称'/>
-        </Form.Item>
-        <Form.Item>
-          <Button type='primary' htmlType='submit'>搜索</Button>
-        </Form.Item>
-      </Form>
-      <Table columns={columns} dataSource={dataSource} bordered/>
-    </>
+    <ListViewWrapper>
+      <ListViewHeader>
+        <ListSearchForm onSubmit={handleSubmit}/>
+      </ListViewHeader>
+      <ListViewContent>
+        <Table columns={columns} dataSource={dataSource} bordered/>
+      </ListViewContent>
+    </ListViewWrapper>
   )
 }
 
