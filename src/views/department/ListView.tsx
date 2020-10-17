@@ -4,6 +4,7 @@ import { Button, Form, Input, message, Switch, Table } from 'antd'
 
 import departmentApi, { IFetchDepartmentsResult } from '../../api/department'
 import { ColumnsType } from 'antd/lib/table'
+import showConfirmModal from '../../components/show-confirm'
 
 const OperationBtnWrapper = styled.div`
   display: flex;
@@ -41,9 +42,11 @@ const columns: ColumnsType<IDepartmentTableData> = [
       <OperationBtnWrapper>
         <Button type='primary'>编辑</Button>
         <Button type='primary' onClick={() => {
-          departmentApi.delete({ id: rowData.key })
-            .then(result => console.log(result))
-            .catch(errMsg => console.log(errMsg))
+          showConfirmModal({ dataName: rowData.name, wantToDo: () => {
+            return departmentApi.delete({ id: rowData.key })
+              .then(result => console.log(result))
+              .catch(errMsg => console.log(errMsg))
+          } })
         }} danger>删除</Button>
       </OperationBtnWrapper>
     )
