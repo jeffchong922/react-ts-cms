@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { message } from 'antd'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
 
 import departmentApi, { IFetchDepartmentsResult } from '../../api/department'
 import ListTable, { IDepartmentTableData } from '../../components/DepartmentView/ListTable'
@@ -19,7 +20,7 @@ const ListViewContent = styled.main`
   flex: 1;
 `
 
-const DepartmentListView = () => {
+const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
   const [dataSource, setDataSource] = useState<Array<IDepartmentTableData>>([])
   
   useEffect(() => {
@@ -36,7 +37,7 @@ const DepartmentListView = () => {
       name: department.name,
       status: department.status,
       memberCount: department.memberCount,
-      editFunc: (id) => { console.log(id) },
+      editFunc: (id) => { history.push(`/department/add?id=${id}`) },
       deleteFunc: (id) => departmentApi.delete({ id })
     }))
   }
@@ -57,4 +58,4 @@ const DepartmentListView = () => {
   )
 }
 
-export default DepartmentListView
+export default withRouter(DepartmentListView)
