@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useImperativeHandle, useState } from 'react'
 import { Switch, Table } from 'antd'
 import { ColumnsType, TableProps } from 'antd/lib/table'
 
@@ -43,8 +43,15 @@ const columns: ColumnsType<IDepartmentTableData> = [
 
 interface ListTableProps extends TableProps<IDepartmentTableData> {
 }
-const ListTable: React.FC<ListTableProps> = ({ dataSource }) => {
+export interface ListTableRef {
+  getSelectedRowKeys: () => React.Key[]
+}
+const ListTable: React.ForwardRefRenderFunction<ListTableRef, ListTableProps> = ({ dataSource, ...tableProps }, ref) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+
+  useImperativeHandle(ref, () => ({
+    getSelectedRowKeys: () => selectedRowKeys
+  }), [selectedRowKeys])
 
   const rowSelection: TableRowSelection<IDepartmentTableData> = {
     selectedRowKeys,
@@ -56,8 +63,8 @@ const ListTable: React.FC<ListTableProps> = ({ dataSource }) => {
   }
 
   return (
-    <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={dataSource} bordered/>
+    <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={dataSource} bordered {...tableProps}/>
   )
 }
 
-export default ListTable
+export default React.forwardRef(ListTable)

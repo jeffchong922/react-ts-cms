@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Button, message, Pagination } from 'antd'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
 
 import departmentApi, { IFetchDepartmentsResult } from '../../api/department'
-import ListTable, { IDepartmentTableData } from '../../components/DepartmentView/ListTable'
+import ListTable, { IDepartmentTableData, ListTableRef } from '../../components/DepartmentView/ListTable'
 import ListSearchForm from '../../components/DepartmentView/ListSearchForm'
 
 
@@ -29,6 +29,7 @@ const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
   const [pageSize, setPageSize] = useState<number>(10)
   const [departmentTotal, setDepartmentTotal] = useState<number>(0)
   const [dataSource, setDataSource] = useState<Array<IDepartmentTableData>>([])
+  const listTableRef = useRef<ListTableRef>(null)
   
   const makeDataSource = useCallback((fetchedResult: IFetchDepartmentsResult): IDepartmentTableData[] => {
     return fetchedResult.fetched.list.map<IDepartmentTableData>(department => ({
@@ -67,6 +68,17 @@ const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
     return `Total ${total} items`
   }
 
+  function handleMultipleDelete () {
+    const ids = getDeleteIds()
+    ids.length && departmentApi.delete({ deleteArray: ids })
+  }
+
+  function getDeleteIds () {
+    return listTableRef.current
+      ? listTableRef.current.getSelectedRowKeys().map(key => '' + key)
+      : []
+  }
+
   return (
     <ListViewWrapper>
       <ListViewHeader>
@@ -74,10 +86,10 @@ const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
       </ListViewHeader>
       <ListViewContent>
         <ListViewHeader>
-          <ListTable dataSource={dataSource}/>
+          <ListTable ref={listTableRef} dataSource={dataSource}/>
         </ListViewHeader>
         <ListViewFooter>
-          <Button>批量删除</Button>
+          <Button onClick={handleMultipleDelete}>批量删除</Button>
           <Pagination current={pageNumber} onChange={handlePageChange} total={departmentTotal} showTotal={renderTotalItem} pageSize={pageSize} showSizeChanger onShowSizeChange={handleShowSizeChange}/>
         </ListViewFooter>
       </ListViewContent>
