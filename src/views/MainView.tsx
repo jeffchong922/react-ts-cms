@@ -30,7 +30,7 @@ const MainView: React.FC = ({ children }) => {
         <AsideMenu menuRoutes={menuRoutes}/>
       </Sider>
       <Layout className={`layout-main ${collapsed ? 'is-collapsed' : ''}`}>
-        <Header className='layout-header'>
+        <Header className={`layout-header ${collapsed ? 'is-collapsed' : ''}`}>
           {
             React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
               className: 'layout-menu-trigger',
