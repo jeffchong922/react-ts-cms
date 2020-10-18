@@ -1,9 +1,10 @@
 import React, { useImperativeHandle, useState } from 'react'
-import { Switch, Table } from 'antd'
+import { Table } from 'antd'
 import { ColumnsType, TableProps } from 'antd/lib/table'
 
 import OperationBtnGroup from './OperationBtnGroup'
 import { TableRowSelection } from 'antd/lib/table/interface'
+import SwitchStatus from './SwitchStatus'
 
 export interface IDepartmentTableData {
   key: string;
@@ -11,7 +12,8 @@ export interface IDepartmentTableData {
   status: boolean;
   memberCount: number;
   editFunc: (id: string) => void;
-  deleteFunc: (id: string) => Promise<any>
+  deleteFunc: (id: string) => Promise<any>;
+  changeStatusFunc: (status: boolean) => Promise<any>;
 }
 const columns: ColumnsType<IDepartmentTableData> = [
   {
@@ -21,7 +23,7 @@ const columns: ColumnsType<IDepartmentTableData> = [
   {
     title: '禁/启用',
     dataIndex: 'status',
-    render: val => <Switch checked={val}/>
+    render: (val, rowData) => <SwitchStatus onChangeStatus={rowData.changeStatusFunc} status={rowData.status}/>
   },
   {
     title: '人员数量',
