@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Button, message, Pagination } from 'antd'
+import { message, Pagination } from 'antd'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
 
 import departmentApi, { IFetchDepartmentsResult } from '../../api/department'
 import ListTable, { IDepartmentTableData, ListTableRef } from '../../components/DepartmentView/ListTable'
 import ListSearchForm from '../../components/DepartmentView/ListSearchForm'
+import ConfirmButton from '../../components/DepartmentView/ConfirmButton'
 
 
 const ListViewWrapper = styled.div`
@@ -70,7 +71,10 @@ const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
 
   function handleMultipleDelete () {
     const ids = getDeleteIds()
-    ids.length && departmentApi.delete({ deleteArray: ids })
+    if (ids.length <= 0) {
+      return Promise.resolve()
+    }
+    return departmentApi.delete({ deleteArray: ids })
   }
 
   function getDeleteIds () {
@@ -89,8 +93,16 @@ const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
           <ListTable ref={listTableRef} dataSource={dataSource}/>
         </ListViewHeader>
         <ListViewFooter>
-          <Button onClick={handleMultipleDelete}>批量删除</Button>
-          <Pagination current={pageNumber} onChange={handlePageChange} total={departmentTotal} showTotal={renderTotalItem} pageSize={pageSize} showSizeChanger onShowSizeChange={handleShowSizeChange}/>
+          <ConfirmButton modalTitleDataName={'所选中的数据'} wantToDo={handleMultipleDelete}>批量删除</ConfirmButton>
+          <Pagination
+            current={pageNumber}
+            pageSize={pageSize}
+            total={departmentTotal}
+            showTotal={renderTotalItem}
+            onChange={handlePageChange}
+            showSizeChanger
+            onShowSizeChange={handleShowSizeChange}
+          />
         </ListViewFooter>
       </ListViewContent>
     </ListViewWrapper>

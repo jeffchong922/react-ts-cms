@@ -4,8 +4,8 @@ import { ModalFuncProps } from 'antd/lib/modal'
 
 const { confirm } = Modal
 
-function renderConfirmTitle (deleteName: string) {
-  return <p>你确定要 <strong style={{ color: 'red' }}>删除</strong> <span style={{ color: 'blueviolet' }}>{deleteName}</span> 数据吗?</p>
+function renderConfirmTitle (dataName: string, optionStr: string = '删除') {
+  return <p>您确定要 <strong style={{ color: 'red' }}>{optionStr}</strong> <span style={{ color: '#7d0000' }}>{dataName}</span> 吗?</p>
 }
 
 type modal = {
@@ -20,15 +20,16 @@ function submitting (modal: modal) {
   })
 }
 
-interface ShowConfirmModalProps {
-  dataName: string;
+export interface ShowConfirmModalProps {
+  modalTitleDataName: string;
+  modalTitleOptionStr?: string;
   wantToDo: () => Promise<any>
 }
-const showConfirmModal = ({ dataName, wantToDo }: ShowConfirmModalProps) => {
+const showConfirmModal = ({ modalTitleDataName, modalTitleOptionStr, wantToDo }: ShowConfirmModalProps) => {
   const modal = confirm({
     keyboard: true,
     maskClosable: true,
-    title: renderConfirmTitle(dataName),
+    title: renderConfirmTitle(modalTitleDataName, modalTitleOptionStr),
     onOk() {
       return new Promise((resolve, reject) => {
         submitting(modal)

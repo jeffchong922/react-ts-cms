@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from 'antd'
 import styled from 'styled-components'
 
-import showConfirmModal from '../show-confirm'
+import ConfirmButton from './ConfirmButton'
 
 const OperationBtnWrapper = styled.div`
   display: flex;
@@ -20,9 +20,7 @@ const OperationBtnGroup: React.FC<OperationBtnGroupProps> = ({ deleteName, delet
   return (
     <OperationBtnWrapper>
         <Button type='primary' onClick={editFunc}>编辑</Button>
-        <Button type='primary' onClick={() => {
-          showConfirmModal({ dataName: deleteName, wantToDo: deleteFunc })
-        }} danger>删除</Button>
+        <ConfirmButton type='primary' wantToDo={deleteFunc} modalTitleDataName={deleteName} danger>删除</ConfirmButton>
     </OperationBtnWrapper>
   )
 }
