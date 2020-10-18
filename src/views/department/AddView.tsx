@@ -1,9 +1,9 @@
 import { message } from 'antd'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 
 import departmentApi, { INewDepartment, IUpdateDepartment } from '../../api/department'
-import NewDepartmentForm, { SubmitData, InitialFormFields } from '../../components/DepartmentView/NewDepartmentForm'
+import NewDepartmentForm, { SubmitData, InitialFormFields, NewDepartmentFormRef } from '../../components/DepartmentView/NewDepartmentForm'
 
 function addWay (departmentInfo: INewDepartment) {
   return departmentApi.add(departmentInfo).then(() => { message.success('注册成功') })
@@ -25,6 +25,7 @@ const DepartmentAddView: React.FC<RouteComponentProps> = ({ location: { search }
   const [searchId, setSearchId] = useState('')
   const [fetched, setFetched] = useState<InitialFormFields>({})
   const [isNewDepartment, setIsNewDepartment] = useState<boolean>(true)
+  const formRef = useRef<NewDepartmentFormRef>(null)
 
   const getDepartmentInfoById = useCallback((id: string) => {
     return departmentApi.fetch({ id })
@@ -50,23 +51,21 @@ const DepartmentAddView: React.FC<RouteComponentProps> = ({ location: { search }
     setIsNewDepartment(!hasId)
     setSearchId(id)
 
-    if (hasId) {
-      getDepartmentInfoById(id).then(data => {
-        if (data) {
-          setFetched({
-            name: data.name,
-            status: data.status,
-            memberCount: data.memberCount,
-            introduction: data.introduction
-          })
-        }
-      })
-    }
+    hasId && getDepartmentInfoById(id).then(data => {
+      if (data) {
+        setFetched({
+          name: data.name,
+          status: data.status,
+          memberCount: data.memberCount,
+          introduction: data.introduction
+        })
+      }
+    })
 
+    !hasId && formRef.current && formRef.current.resetForm()
   }, [search, getDepartmentInfoById])
 
   function handleSubmit ({ name, status, memberCount, introduction }: SubmitData) {
-    console.log(isNewDepartment)
     if (isNewDepartment) {
       return addWay({ name, status, memberCount, introduction })
     } else {
@@ -76,7 +75,7 @@ const DepartmentAddView: React.FC<RouteComponentProps> = ({ location: { search }
 
   return (
     <>
-      <NewDepartmentForm onSubmit={handleSubmit} initialFormFields={fetched}/>
+      <NewDepartmentForm ref={formRef} onSubmit={handleSubmit} initialFormFields={fetched}/>
     </>
   )
 }

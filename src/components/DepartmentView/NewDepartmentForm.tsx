@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useImperativeHandle, useState } from 'react'
 import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
 
 import LabelInput from './LabelInput'
@@ -21,7 +21,10 @@ interface NewDepartmentFormProps {
   initialFormFields?: InitialFormFields;
   onSubmit: (data: SubmitData) => Promise<any>;
 }
-const NewDepartmentForm: React.FC<NewDepartmentFormProps> = (props) => {
+export interface NewDepartmentFormRef {
+  resetForm: () => void
+}
+const NewDepartmentForm: React.ForwardRefRenderFunction<NewDepartmentFormRef, NewDepartmentFormProps> = (props, ref) => {
   const {
     onSubmit,
     initialFormFields = {}
@@ -39,6 +42,10 @@ const NewDepartmentForm: React.FC<NewDepartmentFormProps> = (props) => {
     initialFormFields.status && setStatus(initialFormFields.status)
     initialFormFields.introduction && setIntroduction(initialFormFields.introduction)
   }, [initialFormFields])
+
+  useImperativeHandle(ref, () => ({
+    resetForm: initialForm
+  }), [])
 
   function initialForm () {
     setName('')
@@ -116,4 +123,5 @@ const NewDepartmentForm: React.FC<NewDepartmentFormProps> = (props) => {
   )
 }
 
-export default NewDepartmentForm
+
+export default React.forwardRef(NewDepartmentForm)
