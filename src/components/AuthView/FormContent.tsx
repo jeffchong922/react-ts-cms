@@ -3,9 +3,8 @@ import styled from 'styled-components'
 import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
 
-import { ISignInResult, ISignUpResult, IUserInfo } from '../../api/auth'
 import makeValidator, { Strategy } from '../../helpers/validator'
-import Token from '../../helpers/token'
+import useBoolean from '../../hooks/useBoolean'
 
 const FormItemHelper = styled.span`
   color: #afb2b5;
@@ -19,17 +18,20 @@ function renderEyeNode (isShow: boolean, callback: () => void ): React.ReactNode
   )
 }
 
+export interface SubmitData {
+  username: string;
+  password: string;
+}
 interface FormContentProps {
-  signIn: (userInfo: IUserInfo) => Promise<ISignInResult>;
-  signUp: (userInfo: IUserInfo) => Promise<ISignUpResult>;
+  onSubmit: (data: SubmitData) => Promise<any>;
   isLogin: boolean;
 }
 
-const FormContent: React.FC<FormContentProps> = ({ signIn, signUp, isLogin }) => {
+const FormContent: React.FC<FormContentProps> = ({ onSubmit, isLogin }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, submitting, submitted] = useBoolean(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPw, setShowConfirmPw] = useState(false)
 
@@ -68,42 +70,22 @@ const FormContent: React.FC<FormContentProps> = ({ signIn, signUp, isLogin }) =>
   function handleSubmit () {
     const errorMsg = normalDataCheck()
     if (errorMsg) {
-      return alert(errorMsg)
+      return message.error(errorMsg)
     }
 
     const confirmError = isLogin || confirmDataCheck()
     if (confirmError && typeof confirmError !== 'boolean') {
-      return alert(confirmError)
+      return message.error(confirmError)
     }
 
-    setIsSubmitting(true)
+    submitting()
     
-    if (isLogin) {
-      handleSignIn()
-    } else {
-      handleSignUp()
-    }
-  }
+    onSubmit({
+      username,
+      password
+    }).then(initialForm)
+      .finally(submitted)
 
-  function handleSignIn () {
-    signIn({ username, password }).then(result => {
-      console.log('sign-in token : ', result.token)
-      Token.setToken(result.token)
-    }).catch(errorMsg => {
-      message.error(errorMsg)
-    }).finally(() => setIsSubmitting(false))
-  }
-
-  function handleSignUp () {
-    signUp({ username, password }).then(result => {
-      message.success(`注册成功`)
-      console.log(`用户id : ${result.registered.id} 用户邮箱 : ${result.registered.username}`)
-
-      // 初始化数据
-      initialForm()
-    }).catch(errorMsg => {
-      message.error(errorMsg)
-    }).finally(() => setIsSubmitting(false))
   }
 
   return (

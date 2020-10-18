@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import { message } from 'antd'
+import React from 'react'
 import styled from 'styled-components'
 
 import authApi from '../api/auth'
-import FormContent from '../components/AuthView/FormContent'
+import FormContent, { SubmitData } from '../components/AuthView/FormContent'
+import useToggle from '../hooks/useToggle'
 
 const FormWrapper = styled.section`
   display: flex;
@@ -33,22 +35,46 @@ const FormToggle = styled.span`
 `
 
 const AuthView = () => {
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, toggleIsLogin] = useToggle(true)
+
+  function handleSubmit (data: SubmitData) {
+    if (isLogin) {
+      return signIn(data)
+    } else {
+      return signUp(data)
+    }
+  }
+
+  function signIn (userInfo: SubmitData) {
+    return authApi.signIn(userInfo)
+      .then(result => {
+        console.log('sign-in token : ', result.token)
+      }).catch(errMsg => {
+        message.error(errMsg)
+        return Promise.reject(null)
+      })
+  }
   
-  function formToggle () {
-    setIsLogin(!isLogin)
+  function signUp (userInfo: SubmitData) {
+    return authApi.signUp(userInfo)
+      .then(result => {
+        message.success(`注册成功`)
+        console.log(`用户id : ${result.registered.id} 用户邮箱 : ${result.registered.username}`)
+      }).catch(errMsg => {
+        message.error(errMsg)
+        return Promise.reject(null)
+      })
   }
 
   return (
     <FormWrapper>
       <FormHeader>
         <FormTitle>{isLogin ? '登录' : '注册'}</FormTitle>
-        <FormToggle onClick={formToggle}>{isLogin ? '用户注册' : '用户登录'}</FormToggle>
+        <FormToggle onClick={toggleIsLogin}>{isLogin ? '用户注册' : '用户登录'}</FormToggle>
       </FormHeader>
       <FormContent
         isLogin={isLogin}
-        signIn={authApi.signIn}
-        signUp={authApi.signUp}
+        onSubmit={handleSubmit}
       />
     </FormWrapper>
   )
