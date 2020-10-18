@@ -5,6 +5,14 @@ const url = process.env.REACT_APP_DEPARTMENT_BASE_URL || 'http://localhost:8090'
 
 const client = makeRequestClient({ baseURL: url })
 
+function createObjectList (list: Array<string>, prefix: string = 'item') {
+  const retVal: { [index: string]: string } = {}
+  list.forEach((val, idx) => {
+    retVal[`${prefix}${idx}`] = val
+  })
+  return retVal
+}
+
 export interface INewDepartment {
   name: string;
   memberCount: number;
@@ -17,7 +25,7 @@ export interface IFetchDepartments {
   pageSize?: number;
 }
 export interface IDeleteDepartment {
-  id: string;
+  deleteArray: Array<string>;
 }
 export interface IUpdateDepartment {
   id: string;
@@ -74,10 +82,12 @@ export default Object.freeze({
     return client.getWithToken<IFetchDepartmentsResult>('/departments', config)
       .then(res => res.data, requestRejected())
   },
-  delete ({ id }: IDeleteDepartment) {
+  delete ({ deleteArray }: IDeleteDepartment) {
+    const deleteObjList = createObjectList(deleteArray, 'depart')
     return client.deleteWithToken<IDeleteDepartmentResult>('/departments', {
       params: {
-        departId: id
+        total: deleteArray.length,
+        ...deleteObjList
       }
     })
       .then(res => res.data, requestRejected())

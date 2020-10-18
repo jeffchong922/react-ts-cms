@@ -37,7 +37,7 @@ const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
       status: department.status,
       memberCount: department.memberCount,
       editFunc: (id) => { history.push(`/department/add?id=${id}`) },
-      deleteFunc: (id) => departmentApi.delete({ id })
+      deleteFunc: (id) => departmentApi.delete({ deleteArray: [id] })
     }))
   }, [history])
 
