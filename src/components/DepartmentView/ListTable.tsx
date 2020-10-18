@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Switch, Table } from 'antd'
 import { ColumnsType, TableProps } from 'antd/lib/table'
 
 import OperationBtnGroup from './OperationBtnGroup'
+import { TableRowSelection } from 'antd/lib/table/interface'
 
 export interface IDepartmentTableData {
   key: string;
@@ -43,8 +44,19 @@ const columns: ColumnsType<IDepartmentTableData> = [
 interface ListTableProps extends TableProps<IDepartmentTableData> {
 }
 const ListTable: React.FC<ListTableProps> = ({ dataSource }) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+
+  const rowSelection: TableRowSelection<IDepartmentTableData> = {
+    selectedRowKeys,
+    onChange: onSelectedChange
+  }
+
+  function onSelectedChange (keys: React.Key[]) {
+    setSelectedRowKeys(keys)
+  }
+
   return (
-    <Table pagination={false} columns={columns} dataSource={dataSource} bordered/>
+    <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={dataSource} bordered/>
   )
 }
 
