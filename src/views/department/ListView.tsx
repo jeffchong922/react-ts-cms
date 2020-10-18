@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { message } from 'antd'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
@@ -23,15 +23,7 @@ const ListViewContent = styled.main`
 const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
   const [dataSource, setDataSource] = useState<Array<IDepartmentTableData>>([])
   
-  useEffect(() => {
-    departmentApi.fetch()
-      .then(result => {
-        setDataSource(makeDataSource(result))
-      })
-      .catch(errMsg => message.error(errMsg))
-  }, [])
-
-  function makeDataSource (fetchedResult: IFetchDepartmentsResult): IDepartmentTableData[] {
+  const makeDataSource = useCallback((fetchedResult: IFetchDepartmentsResult): IDepartmentTableData[] => {
     return fetchedResult.fetched.list.map<IDepartmentTableData>(department => ({
       key: department.id,
       name: department.name,
@@ -40,7 +32,15 @@ const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
       editFunc: (id) => { history.push(`/department/add?id=${id}`) },
       deleteFunc: (id) => departmentApi.delete({ id })
     }))
-  }
+  }, [history])
+
+  useEffect(() => {
+    departmentApi.fetch()
+      .then(result => {
+        setDataSource(makeDataSource(result))
+      })
+      .catch(errMsg => message.error(errMsg))
+  }, [makeDataSource])
 
   function handleSubmit (searchText: string) {
     console.log(searchText)

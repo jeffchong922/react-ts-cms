@@ -1,6 +1,6 @@
 import React from 'react'
 import { Switch, Table } from 'antd'
-import { ColumnsType } from 'antd/lib/table'
+import { ColumnsType, TableProps } from 'antd/lib/table'
 
 import OperationBtnGroup from './OperationBtnGroup'
 
@@ -40,12 +40,11 @@ const columns: ColumnsType<IDepartmentTableData> = [
   }
 ]
 
-interface ListTableProps {
-  dataSource: IDepartmentTableData[]
+interface ListTableProps extends TableProps<IDepartmentTableData> {
 }
 const ListTable: React.FC<ListTableProps> = ({ dataSource }) => {
   return (
-    <Table columns={columns} dataSource={dataSource} bordered/>
+    <Table pagination={false} columns={columns} dataSource={dataSource} bordered/>
   )
 }
 
