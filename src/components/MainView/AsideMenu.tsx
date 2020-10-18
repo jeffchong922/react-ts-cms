@@ -1,7 +1,7 @@
 import React from 'react'
 import { Menu } from 'antd'
-import { Link, RouteComponentProps, withRouter } from 'react-router-dom'
 import * as allIcons from '@ant-design/icons';
+import { MenuProps } from 'antd/lib/menu';
 
 interface MenuRoute {
   key: string;
@@ -9,6 +9,7 @@ interface MenuRoute {
   title: string;
   child?: Array<MenuRoute>
 }
+type OnItemClick = (key: string) => void
 
 /**
  * 动态生成 icon
@@ -18,44 +19,47 @@ function renderIcon (iconName: string) {
   return React.createElement(NewIcon)
 }
 
-function renderMenuItem ({ key, title, icon }: MenuRoute) {
-  return <Menu.Item icon={renderIcon(icon)} key={key}><Link to={key}>{title}</Link></Menu.Item>
+function renderMenuItem ({ key, title, icon }: MenuRoute, itemCLick: OnItemClick) {
+  return <Menu.Item icon={renderIcon(icon)} key={key} onClick={() => {itemCLick(key)}}>{title}</Menu.Item>
 }
 
-function renderSubMenu ({ key, title, child, icon }: MenuRoute) {
+function renderSubMenu ({ key, title, child, icon }: MenuRoute, itemCLick: OnItemClick) {
   return (
     <Menu.SubMenu icon={renderIcon(icon)} key={key} title={title}>
       {
         child!.map(route => (
           route.child
-            ? renderSubMenu(route)
-            : renderMenuItem(route)
+            ? renderSubMenu(route, itemCLick)
+            : renderMenuItem(route, itemCLick)
         ))
       }
     </Menu.SubMenu> 
   )
 }
 
-interface AsideMenuProps extends RouteComponentProps {
-  menuRoutes: Array<MenuRoute>
+interface AsideMenuProps extends MenuProps {
+  menuRoutes: Array<MenuRoute>;
+  onItemClick: OnItemClick;
+  activeKey: string;
 }
-const AsideMenu: React.FC<AsideMenuProps> = ({ menuRoutes, location }) => {
+const AsideMenu: React.FC<AsideMenuProps> = ({ menuRoutes, onItemClick, activeKey, ...MenuProps }) => {
   return (
     <Menu
       theme="dark"
       mode="inline"
       defaultOpenKeys={menuRoutes.map(route => route.child ? route.key : '').filter(_ => _)}
-      selectedKeys={[location.pathname]}
+      selectedKeys={[activeKey]}
+      {...MenuProps}
     >
       {
         menuRoutes.map(route => (
           route.child
-            ? renderSubMenu(route)
-            : renderMenuItem(route)
+            ? renderSubMenu(route, onItemClick)
+            : renderMenuItem(route, onItemClick)
         ))
       }
     </Menu>
   )
 }
 
-export default withRouter(AsideMenu)
+export default AsideMenu
