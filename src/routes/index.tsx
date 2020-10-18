@@ -15,10 +15,18 @@ import OvertimeView from '../views/OvertimeView'
 import PrivateRoute from '../components/PrivateRoute'
 import token from '../helpers/token'
 
+function hasToken () {
+  return token.getToken()
+    ? true
+    : false
+}
+
 const routes = (
   <Switch>
-    <Route path='/auth' component={AuthView}/>
-    <PrivateRoute path='/' isAuthenticated={token.getToken() ? true : false}>
+    <PrivateRoute path='/auth' redirectPath='/' isRenderChild={!hasToken()}>
+      <AuthView/>
+    </PrivateRoute>
+    <PrivateRoute path='/' redirectPath='/auth' isRenderChild={hasToken()}>
       <MainView>
         <Switch>
           <Route path='/dashboard'><DashboardView/></Route>

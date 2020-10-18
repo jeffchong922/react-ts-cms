@@ -2,18 +2,19 @@ import React from 'react'
 import { Redirect, Route, RouteProps } from 'react-router-dom'
 
 interface PrivateRouteProps extends RouteProps {
-  isAuthenticated: boolean;
+  isRenderChild: boolean;
+  redirectPath: string;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({children, isAuthenticated, ...rest }) => (
+const PrivateRoute: React.FC<PrivateRouteProps> = ({children, isRenderChild, redirectPath, ...rest }) => (
   <Route
     {...rest}
     render={
-      () => isAuthenticated
+      () => isRenderChild
         ? (children)
         : (
             <Redirect to={{
-              pathname: '/auth'
+              pathname: redirectPath
             }}/>
           )
     }
