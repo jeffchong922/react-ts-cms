@@ -1,72 +1,110 @@
-import React, { useImperativeHandle, useState } from 'react'
-import { Table } from 'antd'
-import { ColumnsType, TableProps } from 'antd/lib/table'
+import React, { useEffect, useState } from 'react'
+import { connect, ConnectedProps } from 'react-redux'
+import { RouteChildrenProps, withRouter } from 'react-router-dom'
+import { message, Table } from 'antd'
+import { ColumnsType } from 'antd/lib/table'
+import { TableRowSelection } from 'antd/lib/table/interface'
 
 import OperationBtnGroup from './OperationBtnGroup'
-import { TableRowSelection } from 'antd/lib/table/interface'
 import SwitchStatus from './SwitchStatus'
+import { RootState } from '../../redux/reducers'
+import { thunkDeleteDepartment, setDeleteDepartment, thunkFetchDepartment } from '../../redux/department/actions'
 
-export interface IDepartmentTableData {
+const mapState = (state: RootState) => ({
+  fetchedList: state.department.departmentList.list,
+  deleteDepartments: state.department.wantToDelete,
+  isListDataFetching: state.department.isListDataFetching
+})
+const mapDispatch = {
+  setDeleteDepartment,
+  thunkDeleteDepartment,
+  thunkFetchDepartment
+}
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export interface ITableData {
   key: string;
   name: string;
   status: boolean;
   memberCount: number;
-  editFunc: (id: string) => void;
-  deleteFunc: (id: string) => Promise<any>;
-  changeStatusFunc: (status: boolean) => Promise<any>;
 }
-const columns: ColumnsType<IDepartmentTableData> = [
-  {
-    title: '部门名称',
-    dataIndex: 'name'
-  },
-  {
-    title: '禁/启用',
-    dataIndex: 'status',
-    render: (val, rowData) => <SwitchStatus onChangeStatus={rowData.changeStatusFunc} status={rowData.status}/>
-  },
-  {
-    title: '人员数量',
-    dataIndex: 'memberCount'
-  },
-  {
-    title: '操作',
-    key: 'operation',
-    width: 180,
-    render: (val, rowData) => (
-      <OperationBtnGroup
-        deleteName={rowData.name}
-        editFunc={() => { rowData.editFunc(rowData.key) }}
-        deleteFunc={() => rowData.deleteFunc(rowData.key)}
-      />
-    )
+
+const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
+  const {
+    history,
+    isListDataFetching,
+    fetchedList,
+    deleteDepartments,
+    setDeleteDepartment,
+    thunkDeleteDepartment,
+    thunkFetchDepartment
+  } = props
+
+  const [dataSource, setDataSource] = useState<ITableData[]>([])
+  useEffect(() => {
+    setDataSource(fetchedList.map(department => ({
+      key: department.id,
+      name: department.name,
+      status: department.status,
+      memberCount: department.memberCount,
+    })))
+  }, [fetchedList])
+
+  const columns: ColumnsType<ITableData> = [
+    { title: '部门名称', dataIndex: 'name' },
+    { title: '禁/启用', dataIndex: 'status',
+      render: (val, rowData) => <SwitchStatus onChangeStatus={handleChangeStatus} status={rowData.status}/>
+    },
+    { title: '人员数量', dataIndex: 'memberCount' },
+    { title: '操作', key: 'operation', width: 180,
+      render: (val, rowData) => (
+        <OperationBtnGroup
+          deleteName={rowData.name}
+          editFunc={() => { handleEdit(rowData.key) }}
+          deleteFunc={() => handleDelete(rowData.key)}
+        />
+      )
+    }
+  ]
+  function handleChangeStatus (status: boolean) {
+    console.log(status)
+    return Promise.resolve()
   }
-]
+  function handleEdit (id: string) {
+    history.push(`/department/add?id=${id}`)
+  }
+  async function handleDelete (id: string) {
+    await thunkDeleteDepartment({ deleteArray: [id] })
+      .then(errMsg => {
+        errMsg && message.error(errMsg)
+      })
+    await thunkFetchDepartment()
+      .then(errMsg => {
+        errMsg && message.error(errMsg)
+      })
+  }
 
-interface ListTableProps extends TableProps<IDepartmentTableData> {
-}
-export interface ListTableRef {
-  getSelectedRowKeys: () => React.Key[]
-}
-const ListTable: React.ForwardRefRenderFunction<ListTableRef, ListTableProps> = ({ dataSource, ...tableProps }, ref) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-
-  useImperativeHandle(ref, () => ({
-    getSelectedRowKeys: () => selectedRowKeys
-  }), [selectedRowKeys])
-
-  const rowSelection: TableRowSelection<IDepartmentTableData> = {
-    selectedRowKeys,
+  const rowSelection: TableRowSelection<ITableData> = {
+    selectedRowKeys: deleteDepartments.deleteArray,
     onChange: onSelectedChange
   }
-
   function onSelectedChange (keys: React.Key[]) {
-    setSelectedRowKeys(keys)
+    setDeleteDepartment({
+      deleteArray: keys.map(key => '' + key)
+    })
   }
 
   return (
-    <Table pagination={false} rowSelection={rowSelection} columns={columns} dataSource={dataSource} bordered {...tableProps}/>
+    <Table
+      bordered
+      pagination={false}
+      loading={isListDataFetching}
+      columns={columns}
+      rowSelection={rowSelection}
+      dataSource={dataSource}
+    />
   )
 }
 
-export default React.forwardRef(ListTable)
+export default withRouter(connector(ListTable))

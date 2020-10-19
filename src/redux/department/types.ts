@@ -1,18 +1,32 @@
 import { AppThunk } from '../thunk-type'
-import { IFetchDepartments, INewDepartment, IUpdateDepartment, IDepartment } from '../../api/department'
+import { INewDepartment, IUpdateDepartment, IDepartment, IDeleteDepartment } from '../../api/department'
 
 export const SET_NEW_DATA_SUBMITTING = 'SET_NEW_DATA_SUBMITTING'
 export const SET_NEW_DATA_SUBMITTED = 'SET_NEW_DATA_SUBMITTED'
-export const SET_NEW_DEPART_FORM_STATE = 'SET_NEW_DEPART_FORM_STATE'
-export const SET_DEPART_INFO = 'SET_DEPART_INFO'
+export const SET_NEW_DEPARTMENT_FORM_STATE = 'SET_NEW_DEPARTMENT_FORM_STATE'
+export const SET_DEPARTMENT_INFO = 'SET_DEPARTMENT_INFO'
+export const SET_DELETE_DEPARTMENT = 'SET_DELETE_DEPARTMENT'
+export const SET_PAGE_NUMBER = 'SET_PAGE_NUMBER'
+export const SET_PAGE_SIZE = 'SET_PAGE_SIZE'
+export const SET_PAGE_LIST = 'SET_PAGE_LIST'
+export const SET_LIST_DATA_FETCHING = 'SET_LIST_DATA_FETCHING'
+export const SET_LIST_DATA_FETCHED = 'SET_LIST_DATA_FETCHED'
 
 // ------------------
 
 export type NewDepartment = INewDepartment
 export type UpdateDepartment = IUpdateDepartment
-export type FetchDepartment = IFetchDepartments
+export type FetchDepartment = {
+  id?: string
+}
+export type DeleteDepartment = IDeleteDepartment
 
 export type Department = IDepartment
+
+export interface PageList {
+  total: number
+  list: Department[]
+}
 
 // ------------------
 
@@ -24,13 +38,43 @@ interface SetNewDataSubmittedAction {
   type: typeof SET_NEW_DATA_SUBMITTED
 }
 
-interface SetDepartInfo {
-  type: typeof SET_DEPART_INFO
+interface SetDepartInfoAction {
+  type: typeof SET_DEPARTMENT_INFO
   payload: Department
 }
 
+interface SetDeleteDepartmentAction {
+  type: typeof SET_DELETE_DEPARTMENT
+  payload: DeleteDepartment
+}
+
+interface SetPageNumberAction {
+  type: typeof SET_PAGE_NUMBER
+  payload: number
+}
+
+interface SetPageSizeAction {
+  type: typeof SET_PAGE_SIZE
+  payload: number
+}
+
+interface SetPageListAction {
+  type: typeof SET_PAGE_LIST
+  payload: PageList
+}
+
+interface SetListDataFetchingAction {
+  type: typeof SET_LIST_DATA_FETCHING
+}
+
+interface SetListDataFetchedAction {
+  type: typeof SET_LIST_DATA_FETCHED
+}
+
 export type DepartmentAction = SetNewDataSubmittingAction | SetNewDataSubmittedAction
-  | SetDepartInfo
+  | SetDepartInfoAction | SetDeleteDepartmentAction
+  | SetPageNumberAction | SetPageSizeAction | SetPageListAction
+  | SetListDataFetchingAction | SetListDataFetchedAction
 
 export type DepartmentThunk<ReturnType = Promise<string>>
   = AppThunk<DepartmentAction, ReturnType>
@@ -38,8 +82,9 @@ export type DepartmentThunk<ReturnType = Promise<string>>
 export interface DepartmentState {
   isNewDataSubmitting: boolean
   departmentInfo: Department | null
-  departmentList: {
-    total: number
-    list: Array<Department>
-  }
+  listPageNumber: number
+  listPageSize: number
+  isListDataFetching: boolean
+  wantToDelete: DeleteDepartment
+  departmentList: PageList
 }

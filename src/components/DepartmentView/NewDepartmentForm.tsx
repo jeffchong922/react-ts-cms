@@ -5,7 +5,7 @@ import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
 import LabelInput from './LabelInput'
 import makeValidator, { Strategy } from '../../helpers/validator'
 import { RootState } from '../../redux/reducers'
-import { thunkNewDepart, thunkUpdateDepart, thunkFetchDepart } from '../../redux/department/actions'
+import { thunkNewDepartment, thunkUpdateDepartment, thunkFetchDepartment } from '../../redux/department/actions'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 import useLocationSearch from '../../hooks/useLocationSearch'
 
@@ -14,9 +14,9 @@ const mapState = (state: RootState) => ({
   departInfoById: state.department.departmentInfo
 })
 const mapDispatch = {
-  thunkNewDepart,
-  thunkUpdateDepart,
-  thunkFetchDepart,
+  thunkNewDepartment,
+  thunkUpdateDepartment,
+  thunkFetchDepartment,
 }
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
@@ -24,7 +24,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 const NewDepartmentForm: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
   const {
     location: { search }, history,
-    thunkFetchDepart, thunkNewDepart, thunkUpdateDepart,
+    thunkFetchDepartment, thunkNewDepartment, thunkUpdateDepartment,
     isSubmitting, departInfoById
   } = props
 
@@ -38,7 +38,7 @@ const NewDepartmentForm: React.FC<PropsFromRedux & RouteComponentProps> = (props
   // 获取数据
   useEffect(() => {
     if (hasId) {
-      thunkFetchDepart({ id })
+      thunkFetchDepartment({ id })
         .then(errMsg => {
           if (errMsg) {
             message.error(`获取指定数据失败`)
@@ -48,7 +48,7 @@ const NewDepartmentForm: React.FC<PropsFromRedux & RouteComponentProps> = (props
     } else {
       initialForm()
     }
-  }, [hasId, id, history, thunkFetchDepart])
+  }, [hasId, id, history, thunkFetchDepartment])
 
   useEffect(() => {
     if (departInfoById && hasId) {
@@ -78,7 +78,7 @@ const NewDepartmentForm: React.FC<PropsFromRedux & RouteComponentProps> = (props
   }
 
   function addWay () {
-    thunkNewDepart({ name, status, introduction, memberCount })
+    thunkNewDepartment({ name, status, introduction, memberCount })
       .then(errMsg => {
         if (errMsg) {
           message.error(errMsg)
@@ -90,7 +90,7 @@ const NewDepartmentForm: React.FC<PropsFromRedux & RouteComponentProps> = (props
   }
 
   function updateWay () {
-    thunkUpdateDepart({ id, name, status, introduction, memberCount })
+    thunkUpdateDepartment({ id, name, status, introduction, memberCount })
       .then(errMsg => {
         if (errMsg) {
           message.error(errMsg)

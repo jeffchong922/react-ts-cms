@@ -6,8 +6,16 @@ import {
   FetchDepartment,
   SET_NEW_DATA_SUBMITTING,
   SET_NEW_DATA_SUBMITTED,
-  SET_DEPART_INFO,
-  Department
+  SET_DEPARTMENT_INFO,
+  Department,
+  DeleteDepartment,
+  SET_DELETE_DEPARTMENT,
+  SET_PAGE_SIZE,
+  SET_PAGE_NUMBER,
+  PageList,
+  SET_PAGE_LIST,
+  SET_LIST_DATA_FETCHING,
+  SET_LIST_DATA_FETCHED
 } from './types'
 
 const setNewDataSubmitting = (): DepartmentAction => ({
@@ -19,11 +27,39 @@ const setNewDataSubmitted = (): DepartmentAction => ({
 })
 
 const setDepartment = (departInfo: Department): DepartmentAction => ({
-  type: SET_DEPART_INFO,
+  type: SET_DEPARTMENT_INFO,
   payload: departInfo
 })
 
-export const thunkNewDepart = (department: NewDepartment): DepartmentThunk =>
+const setPageList = (departments: PageList): DepartmentAction => ({
+  type: SET_PAGE_LIST,
+  payload: departments
+})
+
+const setListDataFetching = (): DepartmentAction => ({
+  type: SET_LIST_DATA_FETCHING
+})
+
+const setListDataFetched = (): DepartmentAction => ({
+  type: SET_LIST_DATA_FETCHED
+})
+
+export const setDeleteDepartment = (departments: DeleteDepartment): DepartmentAction => ({
+  type: SET_DELETE_DEPARTMENT,
+  payload: departments
+})
+
+export const setPageSize = (size: number): DepartmentAction => ({
+  type: SET_PAGE_SIZE,
+  payload: size
+})
+
+export const setPageNumber = (number: number): DepartmentAction => ({
+  type: SET_PAGE_NUMBER,
+  payload: number
+})
+
+export const thunkNewDepartment = (department: NewDepartment): DepartmentThunk =>
   async (dispatch, getState, api) => {
     dispatch(setNewDataSubmitting())
     let error = ''
@@ -39,7 +75,7 @@ export const thunkNewDepart = (department: NewDepartment): DepartmentThunk =>
     return Promise.resolve(error)
   }
 
-export const thunkUpdateDepart = (department: UpdateDepartment): DepartmentThunk =>
+export const thunkUpdateDepartment = (department: UpdateDepartment): DepartmentThunk =>
   async (dispatch, getState, api) => {
     dispatch(setNewDataSubmitting())
     let error = ''
@@ -55,19 +91,51 @@ export const thunkUpdateDepart = (department: UpdateDepartment): DepartmentThunk
     return Promise.resolve(error)
   }
 
-export const thunkFetchDepart = (department: FetchDepartment): DepartmentThunk =>
+export const thunkFetchDepartment = (department: FetchDepartment = {}): DepartmentThunk =>
   async (dispatch, getState, api) => {
+    const pageNumber = getState().department.listPageNumber
+    const pageSize = getState().department.listPageSize
+
     const isAddView = department.id ? true : false
-    isAddView && dispatch(setNewDataSubmitting())
+    if (isAddView) {
+      dispatch(setNewDataSubmitting())
+    } else {
+      dispatch(setListDataFetching())
+    }
+
     let error = ''
-    await api.departmentApi.fetch(department).then(result => {
-      const { list } = result.fetched
-      isAddView && dispatch(setDepartment(list[0]))
+    await api.departmentApi.fetch({
+      id: department.id,
+      pageNumber,
+      pageSize
+    }).then(result => {
+      const { list, total } = result.fetched
+      if (isAddView) {
+        dispatch(setDepartment(list[0]))
+      } else {
+        dispatch(setPageList({
+          total: total,
+          list
+        }))
+      }
     }).catch(errMsg => {
       error = errMsg
     })
     .finally(() => {
       dispatch(setNewDataSubmitted())
+      dispatch(setListDataFetched())
+    })
+
+    return Promise.resolve(error)
+  }
+
+export const thunkDeleteDepartment = (department: DeleteDepartment): DepartmentThunk =>
+  async (dispatch, getState, api) => {
+    let error = ''
+    await api.departmentApi.delete(department).then(result => {
+      // TODO
+    }).catch(errMsg => {
+      error = errMsg
     })
 
     return Promise.resolve(error)

@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { message, Pagination } from 'antd'
-import { withRouter, RouteComponentProps } from 'react-router-dom'
+import { connect, ConnectedProps } from 'react-redux'
+import { message } from 'antd'
 
-import departmentApi, { IFetchDepartmentsResult } from '../../api/department'
-import ListTable, { IDepartmentTableData, ListTableRef } from '../../components/DepartmentView/ListTable'
+import ListTable from '../../components/DepartmentView/ListTable'
 import ListSearchForm from '../../components/DepartmentView/ListSearchForm'
-import ConfirmButton from '../../components/DepartmentView/ConfirmButton'
+import DeleteManyBtn from '../../components/DepartmentView/DeleteManyBtn'
+import ListPagination from '../../components/DepartmentView/ListPagination'
+import { RootState } from '../../redux/reducers'
+import { thunkFetchDepartment, setDeleteDepartment } from '../../redux/department/actions'
 
 
 const ListViewWrapper = styled.div`
@@ -25,63 +27,33 @@ const ListViewFooter = styled.footer`
   justify-content: space-between;
 `
 
-const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
-  const [pageNumber, setPageNumber] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(10)
-  const [departmentTotal, setDepartmentTotal] = useState<number>(0)
-  const [dataSource, setDataSource] = useState<Array<IDepartmentTableData>>([])
-  const listTableRef = useRef<ListTableRef>(null)
-  
-  const makeDataSource = useCallback((fetchedResult: IFetchDepartmentsResult): IDepartmentTableData[] => {
-    return fetchedResult.fetched.list.map<IDepartmentTableData>(department => ({
-      key: department.id,
-      name: department.name,
-      status: department.status,
-      memberCount: department.memberCount,
-      editFunc: (id) => { history.push(`/department/add?id=${id}`) },
-      deleteFunc: (id) => departmentApi.delete({ deleteArray: [id] }),
-      changeStatusFunc: (status) => Promise.resolve('1')
-    }))
-  }, [history])
+const mapState = (state: RootState) => ({})
+const mapDispatch = {
+  thunkFetchDepartment,
+  setDeleteDepartment
+}
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+const DepartmentListView: React.FC<PropsFromRedux> = (props) => {
+  const {
+    thunkFetchDepartment,
+    setDeleteDepartment
+  } = props
 
   useEffect(() => {
-    departmentApi.fetch({ pageNumber, pageSize })
-      .then(result => {
-        setDepartmentTotal(result.fetched.total)
-        setDataSource(makeDataSource(result))
+    thunkFetchDepartment().then(errMsg => {
+      errMsg && message.error(errMsg)
+    })
+    return () => {
+      setDeleteDepartment({
+        deleteArray: []
       })
-      .catch(errMsg => message.error(errMsg))
-  }, [makeDataSource, pageSize, pageNumber])
+    }
+  }, [thunkFetchDepartment, setDeleteDepartment])
 
   function handleSubmit (searchText: string) {
     console.log(searchText)
-  }
-
-  function handleShowSizeChange (current: number, size: number) {
-    setPageNumber(current)
-    setPageSize(size)
-  }
-
-  function handlePageChange (pageNumber: number) {
-    setPageNumber(pageNumber)
-  }
-
-  function renderTotalItem (total: number) {
-    return `Total ${total} items`
-  }
-
-  function handleMultipleDelete () {
-    const ids = getDeleteIds()
-    if (ids.length <= 0) {
-      return Promise.resolve()
-    }
-    return departmentApi.delete({ deleteArray: ids })
-  }
-
-  function getDeleteIds () {
-    return listTableRef.current
-      ? listTableRef.current.getSelectedRowKeys().map(key => '' + key)
-      : []
   }
 
   return (
@@ -91,23 +63,15 @@ const DepartmentListView: React.FC<RouteComponentProps> = ({ history }) => {
       </ListViewHeader>
       <ListViewContent>
         <ListViewHeader>
-          <ListTable ref={listTableRef} dataSource={dataSource}/>
+          <ListTable/>
         </ListViewHeader>
         <ListViewFooter>
-          <ConfirmButton modalTitleDataName={'所选中的数据'} wantToDo={handleMultipleDelete}>批量删除</ConfirmButton>
-          <Pagination
-            current={pageNumber}
-            pageSize={pageSize}
-            total={departmentTotal}
-            showTotal={renderTotalItem}
-            onChange={handlePageChange}
-            showSizeChanger
-            onShowSizeChange={handleShowSizeChange}
-          />
+          <DeleteManyBtn/>
+          <ListPagination/>
         </ListViewFooter>
       </ListViewContent>
     </ListViewWrapper>
   )
 }
 
-export default withRouter(DepartmentListView)
+export default connector(DepartmentListView)
