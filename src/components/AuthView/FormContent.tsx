@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react'
+import { connect, ConnectedProps } from 'react-redux'
+import { RouteChildrenProps, withRouter } from 'react-router-dom'
 import styled from 'styled-components'
 import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
 
 import makeValidator, { Strategy } from '../../helpers/validator'
-import useBoolean from '../../hooks/useBoolean'
+import { RootState } from '../../redux/reducers'
+import { thunkSignIn, thunkSignUp } from '../../redux/auth/actions'
+
+const mapState = (state: RootState) => ({
+  formState: state.auth.formState,
+  isSubmitting: state.auth.isSubmitting
+})
+const mapDispatch = {
+  thunkSignIn,
+  thunkSignUp
+}
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
 
 const FormItemHelper = styled.span`
   color: #afb2b5;
@@ -22,16 +36,21 @@ export interface SubmitData {
   username: string;
   password: string;
 }
-interface FormContentProps {
-  onSubmit: (data: SubmitData) => Promise<any>;
-  isLogin: boolean;
+interface FormContentProps extends PropsFromRedux, RouteChildrenProps {
 }
 
-const FormContent: React.FC<FormContentProps> = ({ onSubmit, isLogin }) => {
+const FormContent: React.FC<FormContentProps> = (props) => {
+  const {
+    history,
+    thunkSignIn,
+    thunkSignUp,
+    formState: { isLogin },
+    isSubmitting
+  } = props
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
-  const [isSubmitting, submitting, submitted] = useBoolean(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPw, setShowConfirmPw] = useState(false)
 
@@ -67,6 +86,24 @@ const FormContent: React.FC<FormContentProps> = ({ onSubmit, isLogin }) => {
       : ''
   }
 
+  function handleSignInResult (errMsg: string) {
+    if (errMsg) {
+      message.error(errMsg)
+    } else {
+      message.success(`欢迎使用\n本地时间: ${new Date().toLocaleDateString()}`)
+      history.replace('/')
+    }
+  }
+
+  function handleSignUpResult (errMsg: string) {
+    if (errMsg) {
+      message.error(errMsg)
+    } else {
+      message.success('注册成功')
+      initialForm()
+    }
+  }
+
   function handleSubmit () {
     const errorMsg = normalDataCheck()
     if (errorMsg) {
@@ -78,13 +115,13 @@ const FormContent: React.FC<FormContentProps> = ({ onSubmit, isLogin }) => {
       return message.error(confirmError)
     }
 
-    submitting()
-    
-    onSubmit({
-      username,
-      password
-    }).then(initialForm)
-      .finally(submitted)
+    if (isLogin) {
+      thunkSignIn({ username, password })
+        .then(handleSignInResult)
+    } else {
+      thunkSignUp({ username, password })
+        .then(handleSignUpResult)
+    }
 
   }
 
@@ -134,4 +171,4 @@ const FormContent: React.FC<FormContentProps> = ({ onSubmit, isLogin }) => {
   )
 }
 
-export default FormContent
+export default withRouter(connector(FormContent))

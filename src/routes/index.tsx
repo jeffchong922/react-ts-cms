@@ -13,20 +13,13 @@ import TakeOffView from '../views/TakeOffView'
 import OvertimeView from '../views/OvertimeView'
 
 import PrivateRoute from '../components/PrivateRoute'
-import token from '../helpers/token'
-
-function hasToken () {
-  return token.getToken()
-    ? true
-    : false
-}
 
 const routes = (
   <Switch>
-    <PrivateRoute path='/auth' redirectPath='/' isRenderChild={!hasToken()}>
+    <PrivateRoute path='/auth' redirectPath='/' isRenderWithToken={false}>
       <AuthView/>
     </PrivateRoute>
-    <PrivateRoute path='/' redirectPath='/auth' isRenderChild={hasToken()}>
+    <PrivateRoute path='/' redirectPath='/auth' isRenderWithToken={true}>
       <MainView>
         <Switch>
           <Route path='/dashboard'><DashboardView/></Route>

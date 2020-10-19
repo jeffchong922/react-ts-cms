@@ -13,7 +13,11 @@ interface IRegisteredInfo {
   username: string;
 }
 export interface ISignInResult {
-  token: string;
+  fetched: {
+    token: string;
+    id: string;
+    username: string;
+  }
 }
 export interface ISignUpResult {
   registered: IRegisteredInfo

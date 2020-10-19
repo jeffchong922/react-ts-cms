@@ -1,10 +1,20 @@
-import { message } from 'antd'
 import React from 'react'
+import { connect, ConnectedProps } from 'react-redux'
 import styled from 'styled-components'
 
-import authApi from '../api/auth'
-import FormContent, { SubmitData } from '../components/AuthView/FormContent'
-import useToggle from '../hooks/useToggle'
+import FormContent from '../components/AuthView/FormContent'
+import { setFormState } from '../redux/auth/actions'
+import { RootState } from '../redux/reducers'
+
+const mapState = (state: RootState) => ({
+  formState: state.auth.formState,
+  isSubmitting: state.auth.isSubmitting
+})
+const mapDispatch = {
+  setFormState
+}
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
 
 const FormWrapper = styled.section`
   display: flex;
@@ -34,50 +44,24 @@ const FormToggle = styled.span`
   cursor: pointer;
 `
 
-const AuthView = () => {
-  const [isLogin, toggleIsLogin] = useToggle(true)
+const AuthView: React.FC<PropsFromRedux> = (props) => {
+  const { isSubmitting, setFormState, formState: { isLogin } } = props
 
-  function handleSubmit (data: SubmitData) {
-    if (isLogin) {
-      return signIn(data)
-    } else {
-      return signUp(data)
+  function handleToggleClick () {
+    if (!isSubmitting) {
+      setFormState({ isLogin: !isLogin })
     }
-  }
-
-  function signIn (userInfo: SubmitData) {
-    return authApi.signIn(userInfo)
-      .then(result => {
-        console.log('sign-in token : ', result.token)
-      }).catch(errMsg => {
-        message.error(errMsg)
-        return Promise.reject(null)
-      })
-  }
-  
-  function signUp (userInfo: SubmitData) {
-    return authApi.signUp(userInfo)
-      .then(result => {
-        message.success(`注册成功`)
-        console.log(`用户id : ${result.registered.id} 用户邮箱 : ${result.registered.username}`)
-      }).catch(errMsg => {
-        message.error(errMsg)
-        return Promise.reject(null)
-      })
   }
 
   return (
     <FormWrapper>
       <FormHeader>
         <FormTitle>{isLogin ? '登录' : '注册'}</FormTitle>
-        <FormToggle onClick={toggleIsLogin}>{isLogin ? '用户注册' : '用户登录'}</FormToggle>
+        <FormToggle onClick={handleToggleClick}>{isLogin ? '用户注册' : '用户登录'}</FormToggle>
       </FormHeader>
-      <FormContent
-        isLogin={isLogin}
-        onSubmit={handleSubmit}
-      />
+      <FormContent/>
     </FormWrapper>
   )
 }
 
-export default AuthView
+export default connector(AuthView)
