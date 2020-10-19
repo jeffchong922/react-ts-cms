@@ -1,51 +1,63 @@
-import React, { useEffect, useImperativeHandle, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { connect, ConnectedProps } from 'react-redux'
 import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
 
 import LabelInput from './LabelInput'
 import makeValidator, { Strategy } from '../../helpers/validator'
-import useBoolean from '../../hooks/useBoolean'
+import { RootState } from '../../redux/reducers'
+import { thunkNewDepart, thunkUpdateDepart, thunkFetchDepart } from '../../redux/department/actions'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
+import useLocationSearch from '../../hooks/useLocationSearch'
 
-export interface InitialFormFields {
-  name?: string;
-  memberCount?: number;
-  status?: boolean;
-  introduction?: string;
+const mapState = (state: RootState) => ({
+  isSubmitting: state.department.isNewDataSubmitting,
+  departInfoById: state.department.departmentInfo
+})
+const mapDispatch = {
+  thunkNewDepart,
+  thunkUpdateDepart,
+  thunkFetchDepart,
 }
-export interface SubmitData {
-  name: string;
-  memberCount: number;
-  status: boolean;
-  introduction: string;
-}
-interface NewDepartmentFormProps {
-  initialFormFields?: InitialFormFields;
-  onSubmit: (data: SubmitData) => Promise<any>;
-}
-export interface NewDepartmentFormRef {
-  resetForm: () => void
-}
-const NewDepartmentForm: React.ForwardRefRenderFunction<NewDepartmentFormRef, NewDepartmentFormProps> = (props, ref) => {
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+const NewDepartmentForm: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
   const {
-    onSubmit,
-    initialFormFields = {}
+    location: { search }, history,
+    thunkFetchDepart, thunkNewDepart, thunkUpdateDepart,
+    isSubmitting, departInfoById
   } = props
 
-  const [name, setName] = useState<string>(initialFormFields.name || '')
-  const [memberCount, setMemberCount] = useState<number>(initialFormFields.memberCount || 0)
-  const [status, setStatus] = useState<boolean>(initialFormFields.status || true)
-  const [introduction, setIntroduction] = useState<string>(initialFormFields.introduction ||'')
-  const [isSubmitting, submitting, submitted] = useBoolean(false)
+  const [name, setName] = useState<string>('')
+  const [memberCount, setMemberCount] = useState<number>(0)
+  const [status, setStatus] = useState<boolean>(true)
+  const [introduction, setIntroduction] = useState<string>('')
+
+  const [hasId, id] = useLocationSearch(search, 'id')
+
+  // 获取数据
+  useEffect(() => {
+    if (hasId) {
+      thunkFetchDepart({ id })
+        .then(errMsg => {
+          if (errMsg) {
+            message.error(`获取指定数据失败`)
+            history.replace('/department/list')
+          }
+        })
+    } else {
+      initialForm()
+    }
+  }, [hasId, id, history, thunkFetchDepart])
 
   useEffect(() => {
-    initialFormFields.name && setName(initialFormFields.name)
-    initialFormFields.memberCount && setMemberCount(initialFormFields.memberCount)
-    initialFormFields.status && setStatus(initialFormFields.status)
-    initialFormFields.introduction && setIntroduction(initialFormFields.introduction)
-  }, [initialFormFields])
-
-  useImperativeHandle(ref, () => ({
-    resetForm: initialForm
-  }), [])
+    if (departInfoById && hasId) {
+      setName(departInfoById.name)
+      setMemberCount(departInfoById.memberCount)
+      setStatus(departInfoById.status)
+      setIntroduction(departInfoById.introduction)
+    }
+  }, [departInfoById, hasId])
 
   function initialForm () {
     setName('')
@@ -65,18 +77,40 @@ const NewDepartmentForm: React.ForwardRefRenderFunction<NewDepartmentFormRef, Ne
     return validator.start()
   }
 
+  function addWay () {
+    thunkNewDepart({ name, status, introduction, memberCount })
+      .then(errMsg => {
+        if (errMsg) {
+          message.error(errMsg)
+        } else {
+          message.success('注册成功')
+          initialForm()
+        }
+      })
+  }
+
+  function updateWay () {
+    thunkUpdateDepart({ id, name, status, introduction, memberCount })
+      .then(errMsg => {
+        if (errMsg) {
+          message.error(errMsg)
+        } else {
+          message.success('更新成功')
+        }
+      })
+  }
+  
   function handleSubmit () {
     const errorMsg = dataCheck()
     if (errorMsg) {
       return message.error(errorMsg)
     }
 
-    submitting()
-
-    onSubmit({
-      name, status, memberCount, introduction
-    }).then(initialForm)
-      .finally(submitted)
+    if (!hasId) {
+      addWay()
+    } else {
+      updateWay()
+    }
   }
 
   return (
@@ -124,4 +158,4 @@ const NewDepartmentForm: React.ForwardRefRenderFunction<NewDepartmentFormRef, Ne
 }
 
 
-export default React.forwardRef(NewDepartmentForm)
+export default withRouter(connector(NewDepartmentForm))

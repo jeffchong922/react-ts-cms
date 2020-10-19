@@ -34,6 +34,17 @@ export interface IUpdateDepartment {
   status?: boolean;
   introduction?: string;
 }
+export interface IDepartment {
+  id: string;
+  name: string;
+  introduction: string;
+  memberCount: number;
+  status: boolean;
+  belonger: {
+    id: string;
+    username: string;
+  }
+}
 
 export interface IAddDepartmentResult {
   inserted: {
@@ -46,17 +57,7 @@ export interface IAddDepartmentResult {
 }
 export interface IFetchDepartmentsResult {
   fetched: {
-    list: Array<{
-      id: string;
-      name: string;
-      introduction: string;
-      memberCount: number;
-      status: boolean;
-      belonger: {
-        id: string;
-        username: string;
-      }
-    }>;
+    list: Array<IDepartment>;
     total: number;
   }
 }
