@@ -40,13 +40,18 @@ const authReducer = (state = initialState, action: AuthAction): AuthState => {
     }
     case SET_TOKEN: {
       const { value } = action.payload
-      token.setToken(value)
+      const isHasToken = value ? true : false
+      if (isHasToken) {
+        token.setToken(value)
+      } else {
+        token.clearToken()
+      }
       return {
         ...state,
         token: {
           value
         },
-        isAuth: true
+        isAuth: isHasToken
       }
     }
     case SET_SUBMITTED: return {

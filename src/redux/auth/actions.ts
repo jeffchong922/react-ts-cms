@@ -35,6 +35,11 @@ export const setFormState = (formState: FormState): AuthAction => ({
   payload: formState
 })
 
+export const logout = (token: Token): AuthAction => ({
+  type: SET_TOKEN,
+  payload: token
+})
+
 export const thunkSignIn = (userInfo: AuthInfo): AuthThunk<Promise<string>> =>
   async (dispatch, getState, api) => {
     dispatch(setSubmitting())
@@ -65,6 +70,26 @@ export const thunkSignUp = (userInfo: AuthInfo): AuthThunk<Promise<any>> =>
     }).catch(errMsg => {
       error = errMsg
     }).finally(() => {
+      dispatch(setSubmitted())
+    })
+
+    return Promise.resolve(error)
+  }
+
+export const thunkSignInByToken = (token: string): AuthThunk<Promise<any>> =>
+  async (dispatch, getState, api) => {
+    dispatch(setSubmitting())
+    let error = ''
+    await api.authApi.signInByToken(token).then(result => {
+      dispatch(setUserInfo({
+        id: result.fetched.id,
+        username: result.fetched.username
+      }))
+      dispatch(setToken({ value: result.fetched.token }))
+    }).catch(errMsg => {
+      error = errMsg
+    })
+    .finally(() => {
       dispatch(setSubmitted())
     })
 

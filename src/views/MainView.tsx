@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { connect, ConnectedProps } from 'react-redux';
 import styled from 'styled-components'
-import { Layout } from 'antd'
+import { Layout, message } from 'antd'
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -10,6 +11,8 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import AsideMenu from '../components/MainView/AsideMenu'
 import menuRoutes from '../data/menu-routes.json'
 import useToggle from '../hooks/useToggle'
+import { RootState } from '../redux/reducers';
+import { thunkSignInByToken, logout } from '../redux/auth/actions'
 
 const { Header, Sider, Content } = Layout
 
@@ -21,8 +24,41 @@ const LogoWrapper = styled.div`
   background-color: #1a2d3f;
 `
 
-const MainView: React.FC<RouteComponentProps> = ({ children, location: { pathname }, history: { push } }) => {
+const mapState = (state: RootState) => ({
+  token: state.auth.token,
+  isAuth: state.auth.isAuth,
+  isAuthSubmitting: state.auth.isSubmitting
+})
+const mapDispatch = {
+  logout,
+  thunkSignInByToken,
+}
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+const MainView: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
+  const {
+    children,
+    location: { pathname },
+    history: { push },
+    token, isAuth, isAuthSubmitting, thunkSignInByToken, logout
+  } = props
+
   const [collapsed, toggleCollapsed] = useToggle(false)
+
+  // 主页面登录信息校验，用于刷新页面时数据丢失
+  useEffect(() => {
+    if (!isAuth && token.value && !isAuthSubmitting) {
+      thunkSignInByToken(token.value)
+        .then(errMsg => {
+          if (errMsg) {
+            message.error('请重新登录, 错误: ' + errMsg)
+            logout({value: ''})
+            push('/auth')
+          }
+        })
+    }
+  }, [isAuth, token.value, thunkSignInByToken, logout, push, isAuthSubmitting])
 
   return (
     <Layout>
@@ -55,4 +91,4 @@ const MainView: React.FC<RouteComponentProps> = ({ children, location: { pathnam
   )
 }
 
-export default withRouter(MainView)
+export default withRouter(connector(MainView))

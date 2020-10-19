@@ -30,5 +30,10 @@ export default Object.freeze({
   signUp (userInfo: IUserInfo) {
     return client.post<ISignUpResult>('/sign-up', userInfo)
       .then(res => res.data, requestRejected())
+  },
+  signInByToken (token: string) {
+    return client.post<ISignInResult>('/sign-in', {
+      token
+    }).then(res => res.data, requestRejected())
   }
 })
