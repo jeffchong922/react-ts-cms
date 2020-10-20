@@ -21,6 +21,7 @@ export interface INewDepartment {
 }
 export interface IFetchDepartments {
   id?: string;
+  searchName?: string;
   pageNumber?: number;
   pageSize?: number;
 }
@@ -72,12 +73,13 @@ export default Object.freeze({
     return client.postWithToken<IAddDepartmentResult>('/departments', departmentInfo)
       .then(res => res.data, requestRejected())
   },
-  fetch ({ id, pageNumber = 1, pageSize = 10 }: IFetchDepartments = {}) {
+  fetch ({ id, pageNumber = 1, pageSize = 10, searchName = '' }: IFetchDepartments = {}) {
     const config: AxiosRequestConfig = {
       params: {
         departId: id,
         pageNumber,
-        pageSize
+        searchName: searchName || undefined,
+        pageSize,
       }
     }
     return client.getWithToken<IFetchDepartmentsResult>('/departments', config)

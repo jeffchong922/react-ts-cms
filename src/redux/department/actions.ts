@@ -15,7 +15,8 @@ import {
   PageList,
   SET_PAGE_LIST,
   SET_LIST_DATA_FETCHING,
-  SET_LIST_DATA_FETCHED
+  SET_LIST_DATA_FETCHED,
+  SET_SEARCH_NAME
 } from './types'
 
 const setNewDataSubmitting = (): DepartmentAction => ({
@@ -57,6 +58,11 @@ export const setPageSize = (size: number): DepartmentAction => ({
 export const setPageNumber = (number: number): DepartmentAction => ({
   type: SET_PAGE_NUMBER,
   payload: number
+})
+
+export const setSearchName = (name: string): DepartmentAction => ({
+  type: SET_SEARCH_NAME,
+  payload: name
 })
 
 export const thunkNewDepartment = (department: NewDepartment): DepartmentThunk =>
@@ -107,6 +113,7 @@ export const thunkFetchDepartment = (department: FetchDepartment = {}): Departme
   async (dispatch, getState, api) => {
     const pageNumber = getState().department.listPageNumber
     const pageSize = getState().department.listPageSize
+    const searchName = getState().department.searchName
 
     const isAddView = department.id ? true : false
     if (isAddView) {
@@ -119,7 +126,8 @@ export const thunkFetchDepartment = (department: FetchDepartment = {}): Departme
     await api.departmentApi.fetch({
       id: department.id,
       pageNumber,
-      pageSize
+      pageSize,
+      searchName
     }).then(result => {
       const { list, total } = result.fetched
       if (isAddView) {

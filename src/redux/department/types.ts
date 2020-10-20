@@ -11,6 +11,7 @@ export const SET_PAGE_SIZE = 'SET_PAGE_SIZE'
 export const SET_PAGE_LIST = 'SET_PAGE_LIST'
 export const SET_LIST_DATA_FETCHING = 'SET_LIST_DATA_FETCHING'
 export const SET_LIST_DATA_FETCHED = 'SET_LIST_DATA_FETCHED'
+export const SET_SEARCH_NAME = 'SET_SEARCH_NAME'
 
 // ------------------
 
@@ -71,10 +72,16 @@ interface SetListDataFetchedAction {
   type: typeof SET_LIST_DATA_FETCHED
 }
 
+interface SetSearchNameAction {
+  type: typeof SET_SEARCH_NAME
+  payload: string
+}
+
 export type DepartmentAction = SetNewDataSubmittingAction | SetNewDataSubmittedAction
   | SetDepartInfoAction | SetDeleteDepartmentAction
   | SetPageNumberAction | SetPageSizeAction | SetPageListAction
   | SetListDataFetchingAction | SetListDataFetchedAction
+  | SetSearchNameAction
 
 export type DepartmentThunk<ReturnType = Promise<string>>
   = AppThunk<DepartmentAction, ReturnType>
@@ -87,4 +94,5 @@ export interface DepartmentState {
   isListDataFetching: boolean
   wantToDelete: DeleteDepartment
   departmentList: PageList
+  searchName: string
 }

@@ -9,7 +9,8 @@ import {
   SET_NEW_DATA_SUBMITTING,
   SET_PAGE_LIST,
   SET_PAGE_NUMBER,
-  SET_PAGE_SIZE
+  SET_PAGE_SIZE,
+  SET_SEARCH_NAME
 } from "./types";
 
 const initialState: DepartmentState = {
@@ -18,6 +19,7 @@ const initialState: DepartmentState = {
   listPageNumber: 1,
   listPageSize: 10,
   isListDataFetching: false,
+  searchName: '',
   wantToDelete: {
     deleteArray: []
   },
@@ -78,6 +80,10 @@ const departmentReducer = (state = initialState, action: DepartmentAction): Depa
           list
         }
       }
+    }
+    case SET_SEARCH_NAME: return {
+      ...state,
+      searchName: action.payload
     }
     default: return state
   }

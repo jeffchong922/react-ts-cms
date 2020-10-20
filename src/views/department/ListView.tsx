@@ -52,14 +52,10 @@ const DepartmentListView: React.FC<PropsFromRedux> = (props) => {
     }
   }, [thunkFetchDepartment, setDeleteDepartment])
 
-  function handleSubmit (searchText: string) {
-    console.log(searchText)
-  }
-
   return (
     <ListViewWrapper>
       <ListViewHeader>
-        <ListSearchForm onSubmit={handleSubmit}/>
+        <ListSearchForm/>
       </ListViewHeader>
       <ListViewContent>
         <ListViewHeader>
