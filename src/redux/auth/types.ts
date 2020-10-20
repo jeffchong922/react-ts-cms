@@ -6,6 +6,7 @@ export const SET_TOKEN = 'SET_TOKEN'
 export const SET_FORM_STATE = 'SET_FORM_STATE'
 export const SET_SUBMITTING = 'SET_SUBMITTING'
 export const SET_SUBMITTED = 'SET_SUBMITTED'
+export const LOGOUT = 'LOGOUT'
 
 // 数据格式
 export type AuthInfo = IUserInfo
@@ -47,8 +48,12 @@ interface SetSubmittedAction {
   type: typeof SET_SUBMITTED
 }
 
+interface LogoutAction {
+  type: typeof LOGOUT
+}
+
 export type AuthAction = SetUserInfoAction | SetTokenAction | SetFormStateAction
-  | SetSubmittedAction | SetSubmittingAction
+  | SetSubmittedAction | SetSubmittingAction | LogoutAction
 
 export type AuthThunk<ReturnType = void> = AppThunk<AuthAction, ReturnType>
 

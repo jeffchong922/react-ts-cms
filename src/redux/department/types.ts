@@ -12,6 +12,7 @@ export const SET_PAGE_LIST = 'SET_PAGE_LIST'
 export const SET_LIST_DATA_FETCHING = 'SET_LIST_DATA_FETCHING'
 export const SET_LIST_DATA_FETCHED = 'SET_LIST_DATA_FETCHED'
 export const SET_SEARCH_NAME = 'SET_SEARCH_NAME'
+export const INITIAL_STATE = 'INITIAL_STATE'
 
 // ------------------
 
@@ -77,11 +78,15 @@ interface SetSearchNameAction {
   payload: string
 }
 
+interface InitialStateAction {
+  type: typeof INITIAL_STATE
+}
+
 export type DepartmentAction = SetNewDataSubmittingAction | SetNewDataSubmittedAction
   | SetDepartInfoAction | SetDeleteDepartmentAction
   | SetPageNumberAction | SetPageSizeAction | SetPageListAction
   | SetListDataFetchingAction | SetListDataFetchedAction
-  | SetSearchNameAction
+  | SetSearchNameAction | InitialStateAction
 
 export type DepartmentThunk<ReturnType = Promise<string>>
   = AppThunk<DepartmentAction, ReturnType>

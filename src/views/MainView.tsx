@@ -13,6 +13,7 @@ import menuRoutes from '../data/menu-routes.json'
 import useToggle from '../hooks/useToggle'
 import { RootState } from '../redux/reducers';
 import { thunkSignInByToken, logout } from '../redux/auth/actions'
+import HeaderAvatar from '../components/MainView/HeaderAvatar';
 
 const { Header, Sider, Content } = Layout
 
@@ -22,6 +23,11 @@ const LogoWrapper = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #1a2d3f;
+`
+const HeaderRightWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 `
 
 const mapState = (state: RootState) => ({
@@ -53,7 +59,7 @@ const MainView: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
         .then(errMsg => {
           if (errMsg) {
             message.error('请重新登录, 错误: ' + errMsg)
-            logout({value: ''})
+            logout()
             push('/auth')
           }
         })
@@ -79,6 +85,9 @@ const MainView: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
               onClick: toggleCollapsed
             })
           }
+          <HeaderRightWrapper>
+            <HeaderAvatar/>
+          </HeaderRightWrapper>
         </Header>
 
         {/* 内容 */}

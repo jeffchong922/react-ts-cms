@@ -16,7 +16,8 @@ import {
   SET_PAGE_LIST,
   SET_LIST_DATA_FETCHING,
   SET_LIST_DATA_FETCHED,
-  SET_SEARCH_NAME
+  SET_SEARCH_NAME,
+  INITIAL_STATE
 } from './types'
 
 const setNewDataSubmitting = (): DepartmentAction => ({
@@ -63,6 +64,10 @@ export const setPageNumber = (number: number): DepartmentAction => ({
 export const setSearchName = (name: string): DepartmentAction => ({
   type: SET_SEARCH_NAME,
   payload: name
+})
+
+export const initialState = (): DepartmentAction => ({
+  type: INITIAL_STATE
 })
 
 export const thunkNewDepartment = (department: NewDepartment): DepartmentThunk =>

@@ -6,7 +6,8 @@ import {
   SET_FORM_STATE,
   SET_SUBMITTED,
   SET_SUBMITTING,
-  SET_TOKEN
+  SET_TOKEN,
+  LOGOUT
 } from "./types";
 
 const initialState: AuthState = {
@@ -61,6 +62,10 @@ const authReducer = (state = initialState, action: AuthAction): AuthState => {
     case SET_SUBMITTING: return {
       ...state,
       isSubmitting: true
+    }
+    case LOGOUT: {
+      token.clearToken()
+      return initialState
     }
     default: return state
   }

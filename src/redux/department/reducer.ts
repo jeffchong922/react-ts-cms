@@ -1,6 +1,7 @@
 import {
   DepartmentAction,
   DepartmentState,
+  INITIAL_STATE,
   SET_DELETE_DEPARTMENT,
   SET_DEPARTMENT_INFO,
   SET_LIST_DATA_FETCHED,
@@ -85,6 +86,7 @@ const departmentReducer = (state = initialState, action: DepartmentAction): Depa
       ...state,
       searchName: action.payload
     }
+    case INITIAL_STATE: return initialState
     default: return state
   }
 }

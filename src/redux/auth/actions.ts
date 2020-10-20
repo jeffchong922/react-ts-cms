@@ -9,7 +9,8 @@ import {
   SET_TOKEN,
   Token,
   FormState,
-  SET_FORM_STATE
+  SET_FORM_STATE,
+  LOGOUT
 } from './types'
 
 const setUserInfo = (userInfo: UserInfo): AuthAction => ({
@@ -35,9 +36,8 @@ export const setFormState = (formState: FormState): AuthAction => ({
   payload: formState
 })
 
-export const logout = (token: Token): AuthAction => ({
-  type: SET_TOKEN,
-  payload: token
+export const logout = (): AuthAction => ({
+  type: LOGOUT
 })
 
 export const thunkSignIn = (userInfo: AuthInfo): AuthThunk<Promise<string>> =>
