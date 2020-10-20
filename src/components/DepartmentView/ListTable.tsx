@@ -8,7 +8,7 @@ import { TableRowSelection } from 'antd/lib/table/interface'
 import OperationBtnGroup from './OperationBtnGroup'
 import SwitchStatus from './SwitchStatus'
 import { RootState } from '../../redux/reducers'
-import { thunkDeleteDepartment, setDeleteDepartment, thunkFetchDepartment } from '../../redux/department/actions'
+import { thunkDeleteDepartment, setDeleteDepartment, thunkFetchDepartment, thunkUpdateDepartment } from '../../redux/department/actions'
 
 const mapState = (state: RootState) => ({
   fetchedList: state.department.departmentList.list,
@@ -18,7 +18,8 @@ const mapState = (state: RootState) => ({
 const mapDispatch = {
   setDeleteDepartment,
   thunkDeleteDepartment,
-  thunkFetchDepartment
+  thunkFetchDepartment,
+  thunkUpdateDepartment
 }
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
@@ -38,7 +39,8 @@ const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
     deleteDepartments,
     setDeleteDepartment,
     thunkDeleteDepartment,
-    thunkFetchDepartment
+    thunkFetchDepartment,
+    thunkUpdateDepartment
   } = props
 
   const [dataSource, setDataSource] = useState<ITableData[]>([])
@@ -54,7 +56,7 @@ const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
   const columns: ColumnsType<ITableData> = [
     { title: '部门名称', dataIndex: 'name' },
     { title: '禁/启用', dataIndex: 'status',
-      render: (val, rowData) => <SwitchStatus onChangeStatus={handleChangeStatus} status={rowData.status}/>
+      render: (val, rowData) => <SwitchStatus onChangeStatus={change => handleChangeStatus(rowData.key, change)} status={rowData.status}/>
     },
     { title: '人员数量', dataIndex: 'memberCount' },
     { title: '操作', key: 'operation', width: 180,
@@ -67,9 +69,12 @@ const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
       )
     }
   ]
-  function handleChangeStatus (status: boolean) {
-    console.log(status)
-    return Promise.resolve()
+  async function handleChangeStatus (id: string, status: boolean) {
+    console.log('want to change to : ', status)
+    await thunkUpdateDepartment({ id, status: status })
+      .then(errMsg => {
+        errMsg && message.error(errMsg)
+      })
   }
   function handleEdit (id: string) {
     history.push(`/department/add?id=${id}`)

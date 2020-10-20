@@ -78,13 +78,25 @@ export const thunkNewDepartment = (department: NewDepartment): DepartmentThunk =
 export const thunkUpdateDepartment = (department: UpdateDepartment): DepartmentThunk =>
   async (dispatch, getState, api) => {
     dispatch(setNewDataSubmitting())
+    
+    const { total, list } = getState().department.departmentList
     let error = ''
+    let updated: Array<Department> = []
     await api.departmentApi.update(department).then(result => {
-      // TODO
+      updated = list.map(oldDepartment => {
+        if (oldDepartment.id === department.id) {
+          oldDepartment.name = typeof department.name === 'undefined' ? oldDepartment.name : department.name
+          oldDepartment.status = typeof department.status === 'undefined' ? oldDepartment.status : department.status
+          oldDepartment.memberCount = typeof department.memberCount === 'undefined' ? oldDepartment.memberCount : department.memberCount
+          oldDepartment.introduction = typeof department.introduction === 'undefined' ? oldDepartment.introduction : department.introduction
+        }
+        return oldDepartment
+      })
     }).catch(errMsg => {
       error = errMsg
     })
     .finally(() => {
+      dispatch(setPageList({ total, list: updated }))
       dispatch(setNewDataSubmitted())
     })
 
