@@ -1,5 +1,5 @@
 import { AppThunk } from '../thunk-type'
-import { INewDepartment, IUpdateDepartment, IDepartment, IDeleteDepartment } from '../../api/department'
+import { NewDepartment as INewDepartment, UpdateDepartment as IUpdateDepartment, Department as IDepartment, DeleteDepartment as IDeleteDepartment } from '../../api/department'
 
 export const SET_NEW_DATA_SUBMITTING = 'SET_NEW_DATA_SUBMITTING'
 export const SET_NEW_DATA_SUBMITTED = 'SET_NEW_DATA_SUBMITTED'

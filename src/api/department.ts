@@ -1,79 +1,62 @@
 import { AxiosRequestConfig } from "axios";
 import makeRequestClient, { requestRejected } from "../helpers/request";
+import { createObjList } from "../helpers/tools";
 
 const url = process.env.REACT_APP_DEPARTMENT_BASE_URL || 'http://localhost:8090'
 
 const client = makeRequestClient({ baseURL: url })
 
-function createObjectList (list: Array<string>, prefix: string = 'item') {
-  const retVal: { [index: string]: string } = {}
-  list.forEach((val, idx) => {
-    retVal[`${prefix}${idx}`] = val
-  })
-  return retVal
-}
-
-export interface INewDepartment {
+export interface NewDepartment {
   name: string;
   memberCount: number;
   status: boolean;
   introduction: string;
 }
-export interface IFetchDepartments {
+export interface FetchDepartments {
   id?: string;
   searchName?: string;
   pageNumber?: number;
   pageSize?: number;
 }
-export interface IDeleteDepartment {
+export interface DeleteDepartment {
   deleteArray: Array<string>;
 }
-export interface IUpdateDepartment {
+export type UpdateDepartment = {
+  [index in keyof NewDepartment]?: NewDepartment[index];
+} & {
   id: string;
-  name?: string;
-  memberCount?: number;
-  status?: boolean;
-  introduction?: string;
-}
-export interface IDepartment {
+};
+export type Department = {
   id: string;
-  name: string;
-  introduction: string;
-  memberCount: number;
-  status: boolean;
   belonger: {
     id: string;
     username: string;
   }
+} & {
+  [index in keyof NewDepartment]: NewDepartment[index];
 }
 
-export interface IAddDepartmentResult {
-  inserted: {
-    id: string;
-    name: string;
-    status: boolean;
-    memberCount: number;
-    introduction: string;
-  }
+export interface AddDepartmentResult {
+  inserted: Department
 }
-export interface IFetchDepartmentsResult {
+export interface FetchDepartmentsResult {
   fetched: {
-    list: Array<IDepartment>;
+    list: Array<Department>;
     total: number;
   }
 }
-interface IDeleteDepartmentResult {
+interface DeleteDepartmentResult {
   deleted: {
     deleteCount: number;
     message: string;
   }
 }
 export default Object.freeze({
-  add (departmentInfo: INewDepartment) {
-    return client.postWithToken<IAddDepartmentResult>('/departments', departmentInfo)
+  add (departmentInfo: NewDepartment) {
+    return client.postWithToken<AddDepartmentResult>('/departments', departmentInfo)
       .then(res => res.data, requestRejected())
   },
-  fetch ({ id, pageNumber = 1, pageSize = 10, searchName = '' }: IFetchDepartments = {}) {
+  fetch ({ id, pageNumber = 1, pageSize = 10, searchName = '' }: FetchDepartments = {}) {
     const config: AxiosRequestConfig = {
       params: {
         departId: id,
@@ -82,12 +65,12 @@ export default Object.freeze({
         pageSize,
       }
     }
-    return client.getWithToken<IFetchDepartmentsResult>('/departments', config)
+    return client.getWithToken<FetchDepartmentsResult>('/departments', config)
       .then(res => res.data, requestRejected())
   },
-  delete ({ deleteArray }: IDeleteDepartment) {
-    const deleteObjList = createObjectList(deleteArray, 'depart')
-    return client.deleteWithToken<IDeleteDepartmentResult>('/departments', {
+  delete ({ deleteArray }: DeleteDepartment) {
+    const deleteObjList = createObjList(deleteArray, 'depart')
+    return client.deleteWithToken<DeleteDepartmentResult>('/departments', {
       params: {
         total: deleteArray.length,
         ...deleteObjList
@@ -95,7 +78,7 @@ export default Object.freeze({
     })
       .then(res => res.data, requestRejected())
   },
-  update (updateDepartmentInfo: IUpdateDepartment) {
+  update (updateDepartmentInfo: UpdateDepartment) {
     return client.putWithToken('/departments', updateDepartmentInfo)
       .then(res => res.data, requestRejected())
   }

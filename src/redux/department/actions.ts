@@ -1,3 +1,4 @@
+import { getObjKeys, prop, setProp } from '../../helpers/tools'
 import {
   DepartmentThunk,
   DepartmentAction,
@@ -70,10 +71,13 @@ export const initialState = (): DepartmentAction => ({
   type: INITIAL_STATE
 })
 
+// 添加部门
 export const thunkNewDepartment = (department: NewDepartment): DepartmentThunk =>
   async (dispatch, getState, api) => {
     dispatch(setNewDataSubmitting())
+
     let error = ''
+
     await api.departmentApi.add(department).then(result => {
       // TODO
     }).catch(errMsg => {
@@ -86,63 +90,74 @@ export const thunkNewDepartment = (department: NewDepartment): DepartmentThunk =
     return Promise.resolve(error)
   }
 
+// 更新部门
 export const thunkUpdateDepartment = (department: UpdateDepartment): DepartmentThunk =>
   async (dispatch, getState, api) => {
     dispatch(setNewDataSubmitting())
     
+    // 用于更新 redux 列表数据
     const { total, list } = getState().department.departmentList
+
     let error = ''
-    let updated: Array<Department> = []
+    let updated = list
+
     await api.departmentApi.update(department).then(result => {
+
+      // 更新数据
       updated = list.map(oldDepartment => {
         if (oldDepartment.id === department.id) {
-          oldDepartment.name = typeof department.name === 'undefined' ? oldDepartment.name : department.name
-          oldDepartment.status = typeof department.status === 'undefined' ? oldDepartment.status : department.status
-          oldDepartment.memberCount = typeof department.memberCount === 'undefined' ? oldDepartment.memberCount : department.memberCount
-          oldDepartment.introduction = typeof department.introduction === 'undefined' ? oldDepartment.introduction : department.introduction
+          getObjKeys(department).forEach(key => {
+            oldDepartment = setProp(oldDepartment, key, prop(department, key))
+          })
         }
         return oldDepartment
       })
+
     }).catch(errMsg => {
       error = errMsg
     })
     .finally(() => {
+
+      // 提交更改
       dispatch(setPageList({ total, list: updated }))
+
       dispatch(setNewDataSubmitted())
     })
 
     return Promise.resolve(error)
   }
 
+// 获取部门
 export const thunkFetchDepartment = (department: FetchDepartment = {}): DepartmentThunk =>
   async (dispatch, getState, api) => {
-    const pageNumber = getState().department.listPageNumber
-    const pageSize = getState().department.listPageSize
-    const searchName = getState().department.searchName
 
+    // 请求参数
+    const { listPageNumber, listPageSize, searchName } = getState().department
+
+    // 对应添加部门与部门列表页面
     const isAddView = department.id ? true : false
-    if (isAddView) {
-      dispatch(setNewDataSubmitting())
-    } else {
-      dispatch(setListDataFetching())
-    }
+    isAddView
+      ? dispatch(setNewDataSubmitting())
+      : dispatch(setListDataFetching())
 
     let error = ''
+    
     await api.departmentApi.fetch({
       id: department.id,
-      pageNumber,
-      pageSize,
+      pageNumber: listPageNumber,
+      pageSize: listPageSize,
       searchName
     }).then(result => {
       const { list, total } = result.fetched
-      if (isAddView) {
-        dispatch(setDepartment(list[0]))
-      } else {
-        dispatch(setPageList({
+
+      // 对应不同页面
+      isAddView
+      ? dispatch(setDepartment(list[0]))
+      : dispatch(setPageList({
           total: total,
           list
         }))
-      }
+
     }).catch(errMsg => {
       error = errMsg
     })
@@ -154,8 +169,10 @@ export const thunkFetchDepartment = (department: FetchDepartment = {}): Departme
     return Promise.resolve(error)
   }
 
+// 删除部门
 export const thunkDeleteDepartment = (department: DeleteDepartment): DepartmentThunk =>
   async (dispatch, getState, api) => {
+
     let error = ''
     await api.departmentApi.delete(department).then(result => {
       // TODO
