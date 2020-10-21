@@ -24,11 +24,14 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({children, isRenderWithToken,
   <Route
     {...rest}
     render={
-      () => shouldRender(isRenderWithToken)
+      ({ location }) => shouldRender(isRenderWithToken)
         ? (children)
         : (
             <Redirect to={{
-              pathname: redirectPath
+              pathname: redirectPath,
+              state: {
+                from: location
+              }
             }}/>
           )
     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { RouteChildrenProps, withRouter } from 'react-router-dom'
+import { Location } from 'history'
 import styled from 'styled-components'
 import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
@@ -32,16 +33,14 @@ function renderEyeNode (isShow: boolean, callback: () => void ): React.ReactNode
   )
 }
 
-export interface SubmitData {
-  username: string;
-  password: string;
-}
-interface FormContentProps extends PropsFromRedux, RouteChildrenProps {
+interface LocationStateProps {
+  from?: Location
 }
 
-const FormContent: React.FC<FormContentProps> = (props) => {
+const FormContent: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
   const {
     history,
+    location,
     thunkSignIn,
     thunkSignUp,
     formState: { isLogin },
@@ -91,7 +90,8 @@ const FormContent: React.FC<FormContentProps> = (props) => {
       message.error(errMsg)
     } else {
       message.success(`欢迎使用\n本地时间: ${new Date().toLocaleDateString()}`)
-      history.replace('/')
+      const { from } = (location.state as LocationStateProps) || { from: { pathname: "/" } }
+      history.replace(from!.pathname)
     }
   }
 
