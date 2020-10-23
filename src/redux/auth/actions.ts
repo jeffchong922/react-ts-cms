@@ -47,7 +47,8 @@ export const thunkSignIn = (userInfo: AuthInfo): AuthThunk<Promise<string>> =>
     await api.authApi.signIn(userInfo).then(result => {
       dispatch(setUserInfo({
         id: result.fetched.id,
-        username: result.fetched.username
+        username: result.fetched.username,
+        userMenu: result.fetched.userMenu
       }))
       dispatch(setToken({ value: result.fetched.token }))
     }).catch(errMsg => {
@@ -83,7 +84,8 @@ export const thunkSignInByToken = (token: string): AuthThunk<Promise<any>> =>
     await api.authApi.signInByToken(token).then(result => {
       dispatch(setUserInfo({
         id: result.fetched.id,
-        username: result.fetched.username
+        username: result.fetched.username,
+        userMenu: result.fetched.userMenu
       }))
       dispatch(setToken({ value: result.fetched.token }))
     }).catch(errMsg => {

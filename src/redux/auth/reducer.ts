@@ -21,12 +21,13 @@ const initialState: AuthState = {
 const authReducer = (state = initialState, action: AuthAction): AuthState => {
   switch (action.type) {
     case SET_USER_INFO: {
-      const { username, id } = action.payload
+      const { username, id, userMenu } = action.payload
       return {
         ...state,
         userInfo: {
           username,
-          id
+          id,
+          userMenu
         }
       }
     }

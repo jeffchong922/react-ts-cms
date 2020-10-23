@@ -1,4 +1,4 @@
-import { IUserInfo } from "../../api/auth"
+import { UserInfo as AuthApiProps, UserMenuItem } from "../../api/types"
 import { AppThunk } from '../thunk-type'
 
 export const SET_USER_INFO = 'SET_USER_INFO'
@@ -9,7 +9,7 @@ export const SET_SUBMITTED = 'SET_SUBMITTED'
 export const LOGOUT = 'LOGOUT'
 
 // 数据格式
-export type AuthInfo = IUserInfo
+export type AuthInfo = AuthApiProps
 
 export interface Token {
   value: string
@@ -18,6 +18,7 @@ export interface Token {
 export interface UserInfo {
   id: string
   username: string
+  userMenu: UserMenuItem[]
 }
 
 export interface FormState {

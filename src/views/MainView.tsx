@@ -9,7 +9,7 @@ import {
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import AsideMenu from '../components/MainView/AsideMenu'
-import menuRoutes from '../data/menu-routes.json'
+// import menuRoutes from '../data/menu-routes.json'
 import useToggle from '../hooks/useToggle'
 import { RootState } from '../redux/reducers';
 import { thunkSignInByToken, logout } from '../redux/auth/actions'
@@ -33,7 +33,8 @@ const HeaderRightWrapper = styled.div`
 const mapState = (state: RootState) => ({
   token: state.auth.token,
   isAuth: state.auth.isAuth,
-  isAuthSubmitting: state.auth.isSubmitting
+  isAuthSubmitting: state.auth.isSubmitting,
+  userInfo: state.auth.userInfo
 })
 const mapDispatch = {
   logout,
@@ -47,7 +48,7 @@ const MainView: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
     children,
     location: { pathname },
     history: { push },
-    token, isAuth, isAuthSubmitting, thunkSignInByToken, logout
+    token, isAuth, isAuthSubmitting, thunkSignInByToken, logout, userInfo
   } = props
 
   const [collapsed, toggleCollapsed] = useToggle(false)
@@ -71,7 +72,11 @@ const MainView: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
       {/* 固定侧边栏 */}
       <Sider trigger={null} collapsible collapsed={collapsed} width='250' className='layout-aside'>
         <LogoWrapper>Logo</LogoWrapper>
-        <AsideMenu activeKey={pathname} onItemClick={push} menuRoutes={menuRoutes}/>
+        <AsideMenu activeKey={pathname} onItemClick={push} menuRoutes={
+          userInfo
+            ? userInfo.userMenu
+            : []
+        }/>
       </Sider>
 
       {/* 主体 */}

@@ -38,7 +38,7 @@ function renderSubMenu ({ key, title, child, icon }: MenuRoute, itemCLick: OnIte
 }
 
 interface AsideMenuProps extends MenuProps {
-  menuRoutes: Array<MenuRoute>;
+  menuRoutes?: Array<MenuRoute>;
   onItemClick: OnItemClick;
   activeKey: string;
 }
@@ -47,12 +47,12 @@ const AsideMenu: React.FC<AsideMenuProps> = ({ menuRoutes, onItemClick, activeKe
     <Menu
       theme="dark"
       mode="inline"
-      defaultOpenKeys={menuRoutes.map(route => route.child ? route.key : '').filter(_ => _)}
+      openKeys={menuRoutes && menuRoutes.map(route => route.child ? route.key : '').filter(_ => _)}
       selectedKeys={[activeKey]}
       {...MenuProps}
     >
       {
-        menuRoutes.map(route => (
+        menuRoutes && menuRoutes.map(route => (
           route.child
             ? renderSubMenu(route, onItemClick)
             : renderMenuItem(route, onItemClick)
