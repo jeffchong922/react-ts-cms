@@ -10,6 +10,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import AsideMenu from '../components/MainView/AsideMenu'
 // import menuRoutes from '../data/menu-routes.json'
+import { generateRoutes } from '../routes'
 import useToggle from '../hooks/useToggle'
 import { RootState } from '../redux/reducers';
 import { thunkSignInByToken, logout } from '../redux/auth/actions'
@@ -45,7 +46,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 const MainView: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
   const {
-    children,
     location: { pathname },
     history: { push },
     token, isAuth, isAuthSubmitting, thunkSignInByToken, logout, userInfo
@@ -97,7 +97,8 @@ const MainView: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
 
         {/* 内容 */}
         <Content className='layout-content'>
-          {children}
+          {/* {children} */}
+          { userInfo && generateRoutes(userInfo.userMenu)}
         </Content>
 
       </Layout>

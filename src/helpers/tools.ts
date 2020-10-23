@@ -10,6 +10,19 @@ export function setProp<T, K extends keyof T> (obj: T, key: K, val: T[K] | undef
   return o
 }
 
+export function flatten<T = any> (array: Array<T | T[]>): T[] {
+  return array.reduce<T[]>(
+    (list, v) => (
+      list.concat(
+        Array.isArray(v)
+          ? flatten(v)
+          : v
+      )
+    ),
+    []
+  )
+}
+
 export function getObjKeys<T> (obj: T): Array<keyof T> {
   return Object.keys(obj) as Array<keyof T>
 }
