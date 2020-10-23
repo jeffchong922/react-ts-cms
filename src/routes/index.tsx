@@ -1,18 +1,21 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import AuthView from '../views/AuthView'
 import MainView from '../views/MainView'
 
-import GreetView from '../views/GreetView'
-import DashboardView from '../views/DashboardView'
-import UserAddView from '../views/user/AddView'
-import UserListView from '../views/user/ListView'
-import DepartmentAddView from '../views/department/AddView'
-import DepartmentListView from '../views/department/ListView'
-import TakeOffView from '../views/TakeOffView'
-import OvertimeView from '../views/OvertimeView'
-
 import PrivateRoute from '../components/PrivateRoute'
+import SimpleLoading from '../components/SimpleLoading'
+
+const LazyComponents = {
+  GreetView: React.lazy(() => import('../views/GreetView')),
+  DashboardView: React.lazy(() => import('../views/DashboardView')),
+  UserAddView: React.lazy(() => import('../views/user/AddView')),
+  UserListView: React.lazy(() => import('../views/user/ListView')),
+  DepartmentAddView: React.lazy(() => import('../views/department/AddView')),
+  DepartmentListView: React.lazy(() => import('../views/department/ListView')),
+  TakeOffView: React.lazy(() => import('../views/TakeOffView')),
+  OvertimeView: React.lazy(() => import('../views/OvertimeView')),
+}
 
 const routes = (
   <Switch>
@@ -21,16 +24,18 @@ const routes = (
     </PrivateRoute>
     <PrivateRoute path='/' redirectPath='/auth' isRenderWithToken={true}>
       <MainView>
-        <Switch>
-          <Route path='/dashboard'><DashboardView/></Route>
-          <Route path='/user/add' component={UserAddView} />
-          <Route path='/user/list' component={UserListView} />
-          <Route path='/department/add' component={DepartmentAddView} />
-          <Route path='/department/list' component={DepartmentListView} />
-          <Route path='/take-off' component={TakeOffView} />
-          <Route path='/overtime' component={OvertimeView} />
-          <Route component={GreetView}/>
-        </Switch>
+        <Suspense fallback={<SimpleLoading/>}>
+          <Switch>
+            <Route path='/dashboard' component={LazyComponents.DashboardView}/>
+            <Route path='/user/add' component={LazyComponents.UserAddView} />
+            <Route path='/user/list' component={LazyComponents.UserListView} />
+            <Route path='/department/add' component={LazyComponents.DepartmentAddView} />
+            <Route path='/department/list' component={LazyComponents.DepartmentListView} />
+            <Route path='/take-off' component={LazyComponents.TakeOffView} />
+            <Route path='/overtime' component={LazyComponents.OvertimeView} />
+            <Route component={LazyComponents.GreetView}/>
+          </Switch>
+        </Suspense>
       </MainView>
     </PrivateRoute>
   </Switch>
