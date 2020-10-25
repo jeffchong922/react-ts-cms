@@ -14,6 +14,8 @@ const LazyComponents = {
   UserListView: React.lazy(() => import('../views/user/ListView')),
   DepartmentAddView: React.lazy(() => import('../views/department/AddView')),
   DepartmentListView: React.lazy(() => import('../views/department/ListView')),
+  PositionAddView: React.lazy(() => import('../views/position/AddView')),
+  PositionListView: React.lazy(() => import('../views/position/ListView')),
   TakeOffView: React.lazy(() => import('../views/TakeOffView')),
   OvertimeView: React.lazy(() => import('../views/OvertimeView')),
 }
