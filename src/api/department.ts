@@ -51,6 +51,16 @@ interface DeleteDepartmentResult {
     message: string;
   }
 }
+
+export interface FetchDepartmentsOnlyNameResult {
+  fetched: {
+    list: Array<{
+      id: string
+      name: string
+    }>,
+    total: number
+  }
+}
 export default Object.freeze({
   add (departmentInfo: NewDepartment) {
     return client.postWithToken<AddDepartmentResult>('/departments', departmentInfo)
@@ -66,6 +76,15 @@ export default Object.freeze({
       }
     }
     return client.getWithToken<FetchDepartmentsResult>('/departments', config)
+      .then(res => res.data, requestRejected())
+  },
+  fetchOnlyName () {
+    const config: AxiosRequestConfig = {
+      params: {
+        nameOnly: true
+      }
+    }
+    return client.getWithToken<FetchDepartmentsOnlyNameResult>('/departments', config)
       .then(res => res.data, requestRejected())
   },
   delete ({ deleteArray }: DeleteDepartment) {

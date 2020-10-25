@@ -27,3 +27,16 @@ export interface SignUpResult {
     username: string
   }
 }
+
+// position module start
+export interface NewPosition {
+  name: string
+  departmentId: string
+  status: boolean
+  introduction: string
+}
+
+export interface AddPositionResult {
+  id: string
+}
+// position module end
