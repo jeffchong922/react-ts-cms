@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import styled from 'styled-components'
 import { connect, ConnectedProps } from 'react-redux'
 import { message } from 'antd'
 
@@ -9,23 +8,7 @@ import DeleteManyBtn from '../../components/DepartmentView/DepartmentDeleteManyB
 import ListPagination from '../../components/DepartmentView/ListPagination'
 import { RootState } from '../../redux/reducers'
 import { thunkFetchDepartment, setDeleteDepartment } from '../../redux/department/actions'
-
-
-const ListViewWrapper = styled.div`
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-`
-const ListViewHeader = styled.header`
-  margin-bottom: 30px;
-`
-const ListViewContent = styled.main`
-  flex: 1;
-`
-const ListViewFooter = styled.footer`
-  display: flex;
-  justify-content: space-between;
-`
+import { ListViewContent, ListViewFooter, ListViewHeader, ListViewWrapper } from '../../components/styled-elements'
 
 const mapState = (state: RootState) => ({})
 const mapDispatch = {
