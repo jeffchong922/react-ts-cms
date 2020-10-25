@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Menu } from 'antd'
 import * as allIcons from '@ant-design/icons';
 import { MenuProps } from 'antd/lib/menu';
@@ -41,13 +41,42 @@ interface AsideMenuProps extends MenuProps {
   menuRoutes?: Array<MenuRoute>;
   onItemClick: OnItemClick;
   activeKey: string;
+  isCollapsed: boolean;
 }
-const AsideMenu: React.FC<AsideMenuProps> = ({ menuRoutes, onItemClick, activeKey, ...MenuProps }) => {
+const AsideMenu: React.FC<AsideMenuProps> = ({ isCollapsed, menuRoutes, onItemClick, activeKey, ...MenuProps }) => {
+  const [openKeys, setOpenKeys] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!isCollapsed) {
+      setOpenKeys(
+        menuRoutes
+          ? menuRoutes.filter(route => route.child).map(_ => _.key)
+          : []
+      )
+    } else {
+      setOpenKeys([])
+    }
+  }, [isCollapsed, menuRoutes])
+
+  function handleSubMenuOpen (keys: React.Key[] | {
+    key: React.Key;
+    item: React.ReactInstance;
+    trigger: string;
+    open: boolean;
+  }) {
+    if (Array.isArray(keys)) {
+      setOpenKeys(keys.map(key => key.toString()))
+    } else {
+      setOpenKeys([keys.key.toString()])
+    }
+  }
+  
   return (
     <Menu
       theme="dark"
       mode="inline"
-      openKeys={menuRoutes && menuRoutes.map(route => route.child ? route.key : '').filter(_ => _)}
+      openKeys={openKeys}
+      onOpenChange={handleSubMenuOpen}
       selectedKeys={[activeKey]}
       {...MenuProps}
     >
