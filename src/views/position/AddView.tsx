@@ -1,10 +1,11 @@
 import React from 'react'
+import NewPositionForm from '../../components/PositionView/NewPositionForm'
 
 const PositionAddView = () => {
   return (
-    <div>
-      添加职位
-    </div>
+    <>
+      <NewPositionForm/>
+    </>
   )
 }
 
