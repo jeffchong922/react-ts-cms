@@ -5,7 +5,7 @@ import { message } from 'antd'
 
 import ListTable from '../../components/DepartmentView/ListTable'
 import ListSearchForm from '../../components/DepartmentView/ListSearchForm'
-import DeleteManyBtn from '../../components/DepartmentView/DeleteManyBtn'
+import DeleteManyBtn from '../../components/DepartmentView/DepartmentDeleteManyBtn'
 import ListPagination from '../../components/DepartmentView/ListPagination'
 import { RootState } from '../../redux/reducers'
 import { thunkFetchDepartment, setDeleteDepartment } from '../../redux/department/actions'
