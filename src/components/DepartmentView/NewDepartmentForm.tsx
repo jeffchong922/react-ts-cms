@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
 
-import LabelInput from './LabelInput'
+import LabelInput from '../LabelInput'
 import makeValidator, { Strategy } from '../../helpers/validator'
 import { RootState } from '../../redux/reducers'
 import { thunkNewDepartment, thunkUpdateDepartment, thunkFetchDepartment } from '../../redux/department/actions'
