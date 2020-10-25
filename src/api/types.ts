@@ -39,4 +39,26 @@ export interface NewPosition {
 export interface AddPositionResult {
   id: string
 }
+
+export interface FetchPositions {
+  id?: string
+  searchName?: string
+  departmentIds?: string[]
+}
+
+export interface FetchPositionsResult {
+  fetched: {
+    list: Array<{
+      id: string
+      name: string
+      introduction: string
+      status: boolean
+      departmentInfo: {
+        id: string
+        name: string
+      }
+    }>
+    total: number
+  }
+}
 // position module end

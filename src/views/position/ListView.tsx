@@ -1,10 +1,24 @@
 import React from 'react'
 
+import ListSearchForm from '../../components/PositionView/ListSearchForm'
+import { ListViewContent, ListViewFooter, ListViewHeader, ListViewWrapper } from '../../components/styled-elements'
+
 const PositionListView = () => {
   return (
-    <div>
-      职位列表
-    </div>
+    <ListViewWrapper>
+      <ListViewHeader>
+        <ListSearchForm/>
+      </ListViewHeader>
+      <ListViewContent>
+        <ListViewHeader>
+          {/* <ListTable/> */}
+        </ListViewHeader>
+        <ListViewFooter>
+          {/* <DeleteManyBtn/> */}
+          {/* <ListPagination/> */}
+        </ListViewFooter>
+      </ListViewContent>
+    </ListViewWrapper>
   )
 }
 

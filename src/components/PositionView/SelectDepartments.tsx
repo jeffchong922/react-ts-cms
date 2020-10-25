@@ -10,17 +10,20 @@ export interface SelectDepartmentsProps {
   selectedList: string[] | string
   setSelectedList: (selected: SelectedType) => void
   isMultiple?: boolean
+  loading?: boolean
 }
 const SelectDepartments: React.VFC<SelectDepartmentsProps> = ({
   selectedList,
   setSelectedList,
-  isMultiple = true
+  isMultiple = true,
+  loading = false
 }) => {
   const [nameList, isFetchingName] = useDepartmentsName()
   return (
     <Select
       allowClear
       showArrow
+      disabled={loading}
       value={selectedList}
       mode={ isMultiple ? 'multiple' : undefined}
       onChange={setSelectedList}
