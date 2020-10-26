@@ -5,24 +5,21 @@ import { Dropdown, Menu } from 'antd'
 
 import { RootState } from '../../redux/reducers'
 import { logout } from '../../redux/auth/actions'
-import { initialState } from '../../redux/department/actions'
 
 const mapState = (state: RootState) => ({
   userInfo: state.auth.userInfo
 })
 const mapDispatch = {
-  logout,
-  departmentInit: initialState
+  logout
 }
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 const HeaderAvatar: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
-  const { userInfo, logout, departmentInit, history } = props
+  const { userInfo, logout, history } = props
   
   function handleLogout () {
     logout()
-    departmentInit()
     history.replace('/auth')
   }
 

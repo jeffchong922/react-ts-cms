@@ -1,5 +1,6 @@
 import { AppThunk } from '../thunk-type'
 import { NewDepartment as INewDepartment, UpdateDepartment as IUpdateDepartment, Department as IDepartment, DeleteDepartment as IDeleteDepartment } from '../../api/department'
+import { LOGOUT } from '../auth/types'
 
 export const SET_NEW_DATA_SUBMITTING = 'SET_NEW_DATA_SUBMITTING'
 export const SET_NEW_DATA_SUBMITTED = 'SET_NEW_DATA_SUBMITTED'
@@ -78,15 +79,15 @@ interface SetSearchNameAction {
   payload: string
 }
 
-interface InitialStateAction {
-  type: typeof INITIAL_STATE
+interface LogoutAction {
+  type: typeof LOGOUT
 }
 
 export type DepartmentAction = SetNewDataSubmittingAction | SetNewDataSubmittedAction
   | SetDepartInfoAction | SetDeleteDepartmentAction
   | SetPageNumberAction | SetPageSizeAction | SetPageListAction
   | SetListDataFetchingAction | SetListDataFetchedAction
-  | SetSearchNameAction | InitialStateAction
+  | SetSearchNameAction | LogoutAction
 
 export type DepartmentThunk<ReturnType = Promise<string>>
   = AppThunk<DepartmentAction, ReturnType>

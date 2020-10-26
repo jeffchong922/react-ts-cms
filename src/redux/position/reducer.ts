@@ -1,3 +1,4 @@
+import { LOGOUT } from "../auth/types";
 import {
   PositionAction, PositionState,
   SET_POSITION_FETCHED,
@@ -108,6 +109,7 @@ const positionReducer = (state = initialState, action: PositionAction): Position
       ...state,
       deleteArray: action.payload
     }
+    case LOGOUT: return initialState
     default: return state
   }
 }

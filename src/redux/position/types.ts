@@ -1,5 +1,6 @@
 import { AppThunk } from '../thunk-type'
 import { NewPosition as ApiNewPosition, FetchPositionsResult, UpdatePosition as ApiUpdatePosition } from '../../api/types'
+import { LOGOUT } from '../auth/types'
 
 export const SET_POSITION_UPDATING = 'SET_POSITION_UPDATING'
 export const SET_POSITION_UPDATED = 'SET_POSITION_UPDATED'
@@ -75,6 +76,10 @@ interface SetPositionDeleteArrayAction {
   type: typeof SET_POSITION_DELETE_ARRAY
   payload: string[]
 }
+
+interface LogoutAction {
+  type: typeof LOGOUT
+}
 // actions end
 
 export type PositionAction = SetNewDataSubmittingAction | SetNewDataSubmittedAction
@@ -82,7 +87,7 @@ export type PositionAction = SetNewDataSubmittingAction | SetNewDataSubmittedAct
   | SetPositionFetchingAction | SetPositionFetchedAction
   | SetPositionPageNumberAction | SetPositionPageSizeAction
   | SetPositionFetchResult | SetPositionInfoByIdAction
-  | SetPositionDeleteArrayAction
+  | SetPositionDeleteArrayAction | LogoutAction
 
 export type PositionThunk<ReturnType = Promise<string>>
   = AppThunk<PositionAction, ReturnType>
