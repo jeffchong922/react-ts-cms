@@ -72,11 +72,9 @@ const MainView: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
       {/* 固定侧边栏 */}
       <Sider trigger={null} collapsible collapsed={collapsed} width='250' className='layout-aside'>
         <LogoWrapper>Logo</LogoWrapper>
-        <AsideMenu isCollapsed={collapsed} activeKey={pathname} onItemClick={push} menuRoutes={
-          userInfo
-            ? userInfo.userMenu
-            : []
-        }/>
+        {
+          userInfo && <AsideMenu activeKey={pathname} onItemClick={push} menuRoutes={userInfo.userMenu}/>
+        }
       </Sider>
 
       {/* 主体 */}
