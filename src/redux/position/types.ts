@@ -11,6 +11,7 @@ export const SET_POSITION_PAGE_NUMBER = 'SET_POSITION_PAGE_NUMBER'
 export const SET_POSITION_PAGE_SIZE = 'SET_POSITION_PAGE_SIZE'
 export const SET_FETCHED_POSITION_RESULT = 'SET_FETCHED_POSITION_RESULT'
 export const SET_POSITION_INFO_BY_ID = 'SET_POSITION_INFO_BY_ID'
+export const SET_POSITION_DELETE_ARRAY = 'SET_POSITION_DELETE_ARRAY'
 
 // type start
 export type NewPosition = ApiNewPosition
@@ -69,6 +70,11 @@ interface SetPositionInfoByIdAction {
   type: typeof SET_POSITION_INFO_BY_ID
   payload: PositionInfo | null
 }
+
+interface SetPositionDeleteArrayAction {
+  type: typeof SET_POSITION_DELETE_ARRAY
+  payload: string[]
+}
 // actions end
 
 export type PositionAction = SetNewDataSubmittingAction | SetNewDataSubmittedAction
@@ -76,6 +82,7 @@ export type PositionAction = SetNewDataSubmittingAction | SetNewDataSubmittedAct
   | SetPositionFetchingAction | SetPositionFetchedAction
   | SetPositionPageNumberAction | SetPositionPageSizeAction
   | SetPositionFetchResult | SetPositionInfoByIdAction
+  | SetPositionDeleteArrayAction
 
 export type PositionThunk<ReturnType = Promise<string>>
   = AppThunk<PositionAction, ReturnType>
@@ -92,4 +99,5 @@ export interface PositionState {
   listPageSize: number
   currentPageList: FetchPosition
   positionInfoById: PositionInfo | null
+  deleteArray: string[]
 }

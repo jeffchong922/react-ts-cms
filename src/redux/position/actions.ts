@@ -15,7 +15,8 @@ import {
   FetchList,
   PositionInfo,
   SET_POSITION_INFO_BY_ID,
-  UpdatePosition
+  UpdatePosition,
+  SET_POSITION_DELETE_ARRAY
 } from "./types";
 
 const setPositionUpdating = (): PositionAction => ({
@@ -58,6 +59,11 @@ export const setPageNumber = (number: number): PositionAction => ({
 export const setPageSize = (number: number): PositionAction => ({
   type: SET_POSITION_PAGE_SIZE,
   payload: number
+})
+
+export const setDeleteArray = (array: string[]): PositionAction => ({
+  type: SET_POSITION_DELETE_ARRAY,
+  payload: array
 })
 
 export const thunkNewPosition = (position: NewPosition): PositionThunk =>
@@ -146,5 +152,21 @@ export const thunkUpdatePosition = (updateInfo: UpdatePosition): PositionThunk =
       dispatch(setPositionUpdated())
     })
 
+    return error
+  }
+
+export const thunkDeletePosition = (deleteArray: string[]): PositionThunk =>
+  async (dispatch, getState, api) => {
+    let error = ''
+    const { list } = getState().position.fetchedList
+    let updated: typeof list
+    await api.positionApi.delete(deleteArray).then(result => {
+      if (result.deleted.deleteCount === deleteArray.length) {
+        updated = list.filter(_ => !deleteArray.includes(_.id))
+        dispatch(setFetchList({ total: updated.length, list: updated }))
+      }
+    }).catch(errMsg => {
+      error = errMsg
+    })
     return error
   }

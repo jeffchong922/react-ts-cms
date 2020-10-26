@@ -9,7 +9,8 @@ import {
   SET_SEARCH_DEPARTMENT_IDS,
   SET_SEARCH_POSITION_NAME,
   SET_FETCHED_POSITION_RESULT,
-  SET_POSITION_INFO_BY_ID
+  SET_POSITION_INFO_BY_ID,
+  SET_POSITION_DELETE_ARRAY
 } from "./types";
 
 const initialState: PositionState = {
@@ -26,7 +27,8 @@ const initialState: PositionState = {
   listPageNumber: 1,
   listPageSize: 10,
   currentPageList: [],
-  positionInfoById: null
+  positionInfoById: null,
+  deleteArray: []
 }
 
 function getPageList<T> (array: T[], pageNumber: number, pageSize: number): T[] {
@@ -101,6 +103,10 @@ const positionReducer = (state = initialState, action: PositionAction): Position
     case SET_POSITION_INFO_BY_ID: return {
       ...state,
       positionInfoById: action.payload
+    }
+    case SET_POSITION_DELETE_ARRAY: return {
+      ...state,
+      deleteArray: action.payload
     }
     default: return state
   }

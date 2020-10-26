@@ -6,13 +6,16 @@ import { ColumnsType } from 'antd/lib/table'
 
 import OperationBtnGroup from '../OperationBtnGroup'
 import { RootState } from '../../redux/reducers'
-// import {} from '../../redux/position/actions'
+import { thunkDeletePosition } from '../../redux/position/actions'
+import SwitchStatus from '../DepartmentView/SwitchStatus'
 
 const mapState = (state: RootState) => ({
   fetchedList: state.position.currentPageList,
   isListDataFetching: state.position.isFetching
 })
-const mapDispatch = {}
+const mapDispatch = {
+  deleteData: thunkDeletePosition
+}
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
@@ -27,7 +30,8 @@ const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
   const {
     history,
     isListDataFetching,
-    fetchedList
+    fetchedList,
+    deleteData
   } = props
 
   const [dataSource, setDataSource] = useState<ITableData[]>([])
@@ -43,6 +47,9 @@ const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
   const columns: ColumnsType<ITableData> = [
     { title: '职位名称', dataIndex: 'name' },
     { title: '部门名称', dataIndex: 'departmentName' },
+    { title: '禁/启用', dataIndex: 'status',
+      render: (val, rowData) => <SwitchStatus status={rowData.status}/>
+    },
     { title: '操作', key: 'operation', width: 180,
       render: (val, rowData) => (
         <OperationBtnGroup
@@ -60,6 +67,10 @@ const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
   }
   // 删除逻辑
   async function handleDelete (id: string) {
+    await deleteData([id])
+      .then(errMsg => {
+        errMsg && message.error(errMsg)
+      })
   }
 
   return (

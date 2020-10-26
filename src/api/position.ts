@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import makeRequestClient, { requestRejected } from "../helpers/request";
 import { createObjList } from "../helpers/tools";
-import { AddPositionResult, FetchPositions, FetchPositionsResult, NewPosition, UpdatePosition } from "./types";
+import { AddPositionResult, DeletePositionsResult, FetchPositions, FetchPositionsResult, NewPosition, UpdatePosition } from "./types";
 
 const url = process.env.REACT_APP_POSITION_BASE_URL || 'http://localhost:8090'
 
@@ -27,5 +27,13 @@ export default Object.freeze({
   update (updateData: UpdatePosition) {
     return client.putWithToken('/positions', updateData)
       .then(res => res.data, requestRejected())
+  },
+  delete (deleteData: string[]) {
+    const deleteObjList = createObjList(deleteData, 'posit')
+    return client.deleteWithToken<DeletePositionsResult>('/positions', {
+      params: {
+        ...deleteObjList
+      }
+    }).then(res => res.data, requestRejected())
   }
 })

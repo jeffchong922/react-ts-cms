@@ -67,4 +67,11 @@ export type UpdatePosition = {
 } & {
   id: string
 }
+
+export interface DeletePositionsResult {
+  deleted: {
+    deleteCount: number
+    message: string
+  }
+}
 // position module end
