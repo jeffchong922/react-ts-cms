@@ -2,7 +2,7 @@ import React from 'react'
 import { Button } from 'antd'
 import styled from 'styled-components'
 
-import ConfirmButton from '../ConfirmButton'
+import ConfirmButton from './ConfirmButton'
 
 const OperationBtnWrapper = styled.div`
   display: flex;

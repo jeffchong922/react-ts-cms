@@ -5,7 +5,7 @@ import { message, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import { TableRowSelection } from 'antd/lib/table/interface'
 
-import OperationBtnGroup from './OperationBtnGroup'
+import OperationBtnGroup from '../OperationBtnGroup'
 import SwitchStatus from './SwitchStatus'
 import { RootState } from '../../redux/reducers'
 import { thunkDeleteDepartment, setDeleteDepartment, thunkFetchDepartment, thunkUpdateDepartment } from '../../redux/department/actions'
