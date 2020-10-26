@@ -2,6 +2,7 @@ import React from 'react'
 
 import ListSearchForm from '../../components/PositionView/ListSearchForm'
 import ListTable from '../../components/PositionView/ListTable'
+import ListPagination from '../../components/PositionView/ListPagination'
 import { ListViewContent, ListViewFooter, ListViewHeader, ListViewWrapper } from '../../components/styled-elements'
 
 const PositionListView = () => {
@@ -16,7 +17,7 @@ const PositionListView = () => {
         </ListViewHeader>
         <ListViewFooter>
           {/* <DeleteManyBtn/> */}
-          {/* <ListPagination/> */}
+          <ListPagination/>
         </ListViewFooter>
       </ListViewContent>
     </ListViewWrapper>
