@@ -11,7 +11,9 @@ import {
   SET_POSITION_PAGE_NUMBER,
   SET_POSITION_PAGE_SIZE,
   SET_FETCHED_POSITION_RESULT,
-  FetchList
+  FetchList,
+  PositionInfo,
+  SET_POSITION_INFO_BY_ID
 } from "./types";
 
 const setPositionUpdating = (): PositionAction => ({
@@ -42,6 +44,11 @@ export const setSearchPositionName = (name: string): PositionAction => ({
   payload: name
 })
 
+export const setPositionByIdInfo = (info: PositionInfo | null): PositionAction => ({
+  type: SET_POSITION_INFO_BY_ID,
+  payload: info
+})
+
 export const setPageNumber = (number: number): PositionAction => ({
   type: SET_POSITION_PAGE_NUMBER,
   payload: number
@@ -70,7 +77,11 @@ export const thunkNewPosition = (position: NewPosition): PositionThunk =>
 export const thunkFetchPositions = ({ id }: { id?: string } = {}): PositionThunk =>
   async (dispatch, getState, api) => {
     let error = ''
-    dispatch(setPositionFetching())
+    if (!id) {
+      dispatch(setPositionFetching())
+    } else {
+      dispatch(setPositionUpdating())
+    }
 
     const { positionName, departmentIds } = getState().position.searchInfo
 
@@ -79,11 +90,20 @@ export const thunkFetchPositions = ({ id }: { id?: string } = {}): PositionThunk
       searchName: positionName,
       departmentIds
     }).then(result => {
-      dispatch(setFetchList(result.fetched))
+      if (!id) {
+        dispatch(setFetchList(result.fetched))
+      } else {
+        dispatch(setPositionByIdInfo(
+          result.fetched.total !== 0
+            ? result.fetched.list[0]
+            : null
+        ))
+      }
     }).catch(errMsg => {
       error = errMsg
     }).finally(() => {
       dispatch(setPositionFetched())
+      dispatch(setPositionUpdated())
     })
 
     return error

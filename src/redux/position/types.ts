@@ -10,6 +10,7 @@ export const SET_SEARCH_POSITION_NAME = 'SET_SEARCH_POSITION_NAME'
 export const SET_POSITION_PAGE_NUMBER = 'SET_POSITION_PAGE_NUMBER'
 export const SET_POSITION_PAGE_SIZE = 'SET_POSITION_PAGE_SIZE'
 export const SET_FETCHED_POSITION_RESULT = 'SET_FETCHED_POSITION_RESULT'
+export const SET_POSITION_INFO_BY_ID = 'SET_POSITION_INFO_BY_ID'
 
 // type start
 export type NewPosition = ApiNewPosition
@@ -20,6 +21,8 @@ export interface FetchList {
   list: FetchPosition
   total: number
 }
+
+export type PositionInfo = FetchPositionsResult['fetched']['list'][number]
 // type end
 
 // actions start
@@ -59,13 +62,18 @@ interface SetPositionFetchResult {
   type: typeof SET_FETCHED_POSITION_RESULT
   payload: FetchList
 }
+
+interface SetPositionInfoByIdAction {
+  type: typeof SET_POSITION_INFO_BY_ID
+  payload: PositionInfo | null
+}
 // actions end
 
 export type PositionAction = SetNewDataSubmittingAction | SetNewDataSubmittedAction
   | SetSearchDepartmentIdsAction | SetSearchPositionNameAction
   | SetPositionFetchingAction | SetPositionFetchedAction
   | SetPositionPageNumberAction | SetPositionPageSizeAction
-  | SetPositionFetchResult
+  | SetPositionFetchResult | SetPositionInfoByIdAction
 
 export type PositionThunk<ReturnType = Promise<string>>
   = AppThunk<PositionAction, ReturnType>
@@ -81,4 +89,5 @@ export interface PositionState {
   listPageNumber: number
   listPageSize: number
   currentPageList: FetchPosition
+  positionInfoById: PositionInfo | null
 }

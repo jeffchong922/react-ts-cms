@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 import { Button, Form, Input, message, Radio } from 'antd'
@@ -8,13 +8,15 @@ import SelectDepartments, { SelectedType } from './SelectDepartments'
 import makeValidator, { Strategy } from '../../helpers/validator'
 import useLocationSearch from '../../hooks/useLocationSearch'
 import { RootState } from '../../redux/reducers'
-import { thunkNewPosition } from '../../redux/position/actions'
+import { thunkNewPosition, thunkFetchPositions } from '../../redux/position/actions'
 
 const mapState = (state: RootState) => ({
-  isSubmitting: state.position.isUpdating
+  isSubmitting: state.position.isUpdating,
+  fetchedInfo: state.position.positionInfoById
 })
 const mapDispatch = {
-  addPosition: thunkNewPosition
+  addPosition: thunkNewPosition,
+  fetchInfoById: thunkFetchPositions
 }
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
@@ -23,8 +25,11 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 const NewPositionForm: React.FC<PropsFromRedux & RouteComponentProps> = (props) => {
   const {
     location: { search },
+    history,
+    fetchedInfo,
     isSubmitting,
-    addPosition
+    addPosition,
+    fetchInfoById
   } = props
 
   const [departmentId, setDepartmentId] = useState('')
@@ -33,6 +38,30 @@ const NewPositionForm: React.FC<PropsFromRedux & RouteComponentProps> = (props) 
   const [introduction, setIntroduction] = useState<string>('')
 
   const [hasId, id] = useLocationSearch(search, 'id')
+
+  // 根据 id 获取数据
+  useEffect(() => {
+    if (hasId) {
+      fetchInfoById({ id })
+        .then(errMsg => {
+          if (errMsg) {
+            message.error(errMsg)
+            history.replace('/position/list')
+          }
+        })
+    } else {
+      initialForm()
+    }
+  }, [hasId, id, history, fetchInfoById])
+
+  useEffect(() => {
+    if (fetchedInfo && hasId) {
+      setName(fetchedInfo.name)
+      setDepartmentId(fetchedInfo.departmentInfo.id)
+      setStatus(fetchedInfo.status)
+      setIntroduction(fetchedInfo.introduction)
+    }
+  }, [fetchedInfo, hasId])
 
   /**
    * 校验数据

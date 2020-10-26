@@ -8,7 +8,8 @@ import {
   SET_POSITION_UPDATING,
   SET_SEARCH_DEPARTMENT_IDS,
   SET_SEARCH_POSITION_NAME,
-  SET_FETCHED_POSITION_RESULT
+  SET_FETCHED_POSITION_RESULT,
+  SET_POSITION_INFO_BY_ID
 } from "./types";
 
 const initialState: PositionState = {
@@ -24,7 +25,8 @@ const initialState: PositionState = {
   },
   listPageNumber: 1,
   listPageSize: 10,
-  currentPageList: []
+  currentPageList: [],
+  positionInfoById: null
 }
 
 function getPageList<T> (array: T[], pageNumber: number, pageSize: number): T[] {
@@ -95,6 +97,10 @@ const positionReducer = (state = initialState, action: PositionAction): Position
           total: action.payload.total
         }
       }
+    }
+    case SET_POSITION_INFO_BY_ID: return {
+      ...state,
+      positionInfoById: action.payload
     }
     default: return state
   }
