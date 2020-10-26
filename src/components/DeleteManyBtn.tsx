@@ -8,7 +8,7 @@ export type DeleteArray = string[]
 export interface DeleteManyBtnProps {
   deleteArray: DeleteArray
   thunkDelete: ({ deleteArray }: { deleteArray: DeleteArray }) => Promise<string | undefined>
-  thunkFetch: () => Promise<string | undefined>
+  thunkFetch?: () => Promise<string | undefined>
 }
 
 const DeleteManyBtn: React.FC<DeleteManyBtnProps & { children?: string }> = (props) => {
@@ -25,7 +25,7 @@ const DeleteManyBtn: React.FC<DeleteManyBtnProps & { children?: string }> = (pro
       .then(errMsg => {
         errMsg && message.error(errMsg)
       })
-    await thunkFetch()
+    thunkFetch && await thunkFetch()
       .then(errMsg => {
         errMsg && message.error(errMsg)
       })

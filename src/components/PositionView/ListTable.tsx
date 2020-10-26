@@ -6,15 +6,18 @@ import { ColumnsType } from 'antd/lib/table'
 
 import OperationBtnGroup from '../OperationBtnGroup'
 import { RootState } from '../../redux/reducers'
-import { thunkDeletePosition } from '../../redux/position/actions'
+import { thunkDeletePosition, setDeleteArray } from '../../redux/position/actions'
 import SwitchStatus from '../DepartmentView/SwitchStatus'
+import { TableRowSelection } from 'antd/lib/table/interface'
 
 const mapState = (state: RootState) => ({
   fetchedList: state.position.currentPageList,
+  selectedArray: state.position.deleteArray,
   isListDataFetching: state.position.isFetching
 })
 const mapDispatch = {
-  deleteData: thunkDeletePosition
+  deleteData: thunkDeletePosition,
+  setSelected: setDeleteArray
 }
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
@@ -31,7 +34,8 @@ const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
     history,
     isListDataFetching,
     fetchedList,
-    deleteData
+    deleteData,
+    selectedArray, setSelected
   } = props
 
   const [dataSource, setDataSource] = useState<ITableData[]>([])
@@ -73,12 +77,21 @@ const ListTable: React.FC<PropsFromRedux & RouteChildrenProps> = (props) => {
       })
   }
 
+  const rowSelection: TableRowSelection<ITableData> = {
+    selectedRowKeys: selectedArray,
+    onChange: onSelectedChange
+  }
+  function onSelectedChange (keys: React.Key[]) {
+    setSelected(keys.map(key => '' + key))
+  }
+
   return (
     <Table
       bordered
       pagination={false}
       loading={isListDataFetching}
       columns={columns}
+      rowSelection={rowSelection}
       dataSource={dataSource}
     />
   )
