@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import makeRequestClient, { requestRejected } from "../helpers/request";
 import { createObjList } from "../helpers/tools";
-import { AddPositionResult, FetchPositions, FetchPositionsResult, NewPosition } from "./types";
+import { AddPositionResult, FetchPositions, FetchPositionsResult, NewPosition, UpdatePosition } from "./types";
 
 const url = process.env.REACT_APP_POSITION_BASE_URL || 'http://localhost:8090'
 
@@ -22,6 +22,10 @@ export default Object.freeze({
       }
     }
     return client.getWithToken<FetchPositionsResult>('/positions', config)
+      .then(res => res.data, requestRejected())
+  },
+  update (updateData: UpdatePosition) {
+    return client.putWithToken('/positions', updateData)
       .then(res => res.data, requestRejected())
   }
 })

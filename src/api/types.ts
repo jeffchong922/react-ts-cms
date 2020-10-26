@@ -61,4 +61,10 @@ export interface FetchPositionsResult {
     total: number
   }
 }
+
+export type UpdatePosition = {
+  [key in keyof NewPosition]?: NewPosition[key]
+} & {
+  id: string
+}
 // position module end

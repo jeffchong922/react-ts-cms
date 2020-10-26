@@ -1,3 +1,4 @@
+import { getObjKeys, prop, setProp } from "../../helpers/tools";
 import {
   PositionAction,
   PositionThunk,
@@ -13,7 +14,8 @@ import {
   SET_FETCHED_POSITION_RESULT,
   FetchList,
   PositionInfo,
-  SET_POSITION_INFO_BY_ID
+  SET_POSITION_INFO_BY_ID,
+  UpdatePosition
 } from "./types";
 
 const setPositionUpdating = (): PositionAction => ({
@@ -103,6 +105,44 @@ export const thunkFetchPositions = ({ id }: { id?: string } = {}): PositionThunk
       error = errMsg
     }).finally(() => {
       dispatch(setPositionFetched())
+      dispatch(setPositionUpdated())
+    })
+
+    return error
+  }
+
+export const thunkUpdatePosition = (updateInfo: UpdatePosition): PositionThunk =>
+  async (dispatch, getState, api) => {
+    dispatch(setPositionUpdating())
+    
+    // 用于更新 redux 列表数据
+    const { total, list } = getState().position.fetchedList
+
+    let error = ''
+    let updated = list
+
+    await api.positionApi.update(updateInfo).then(result => {
+
+      // 更新数据
+      updated = list.map(oldData => {
+        if (oldData.id === updateInfo.id) {
+          getObjKeys(updateInfo).forEach(key => {
+            if (key !== 'departmentId') {
+              oldData = setProp(oldData, key, prop(updateInfo, key))
+            }
+          })
+        }
+        return oldData
+      })
+
+    }).catch(errMsg => {
+      error = errMsg
+    })
+    .finally(() => {
+
+      // 提交更改
+      dispatch(setFetchList({ total, list: updated }))
+
       dispatch(setPositionUpdated())
     })
 

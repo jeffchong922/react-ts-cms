@@ -1,5 +1,5 @@
 import { AppThunk } from '../thunk-type'
-import { NewPosition as ApiNewPosition, FetchPositionsResult } from '../../api/types'
+import { NewPosition as ApiNewPosition, FetchPositionsResult, UpdatePosition as ApiUpdatePosition } from '../../api/types'
 
 export const SET_POSITION_UPDATING = 'SET_POSITION_UPDATING'
 export const SET_POSITION_UPDATED = 'SET_POSITION_UPDATED'
@@ -23,6 +23,8 @@ export interface FetchList {
 }
 
 export type PositionInfo = FetchPositionsResult['fetched']['list'][number]
+
+export type UpdatePosition = ApiUpdatePosition
 // type end
 
 // actions start

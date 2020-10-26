@@ -8,7 +8,7 @@ import SelectDepartments, { SelectedType } from './SelectDepartments'
 import makeValidator, { Strategy } from '../../helpers/validator'
 import useLocationSearch from '../../hooks/useLocationSearch'
 import { RootState } from '../../redux/reducers'
-import { thunkNewPosition, thunkFetchPositions } from '../../redux/position/actions'
+import { thunkNewPosition, thunkFetchPositions, thunkUpdatePosition } from '../../redux/position/actions'
 
 const mapState = (state: RootState) => ({
   isSubmitting: state.position.isUpdating,
@@ -16,7 +16,8 @@ const mapState = (state: RootState) => ({
 })
 const mapDispatch = {
   addPosition: thunkNewPosition,
-  fetchInfoById: thunkFetchPositions
+  fetchInfoById: thunkFetchPositions,
+  updateData: thunkUpdatePosition
 }
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
@@ -29,7 +30,8 @@ const NewPositionForm: React.FC<PropsFromRedux & RouteComponentProps> = (props) 
     fetchedInfo,
     isSubmitting,
     addPosition,
-    fetchInfoById
+    fetchInfoById,
+    updateData
   } = props
 
   const [departmentId, setDepartmentId] = useState('')
@@ -101,7 +103,19 @@ const NewPositionForm: React.FC<PropsFromRedux & RouteComponentProps> = (props) 
     }
   }
   function updateWay () {
-    // TODO
+    updateData({
+      id,
+      name,
+      status,
+      introduction,
+      departmentId
+    }).then(errMsg => {
+      if (errMsg) {
+        message.error(errMsg)
+      } else {
+        message.success('更新成功')
+      }
+    })
   }
   function addWay () {
     addPosition({
@@ -136,7 +150,7 @@ const NewPositionForm: React.FC<PropsFromRedux & RouteComponentProps> = (props) 
     <Form onFinish={handleSubmit}>
       <Form.Item>
         <LabelInput label='选择部门' inputCol={{ md: 12, lg: 10, xl: 5 }}>
-          <SelectDepartments isMultiple={false} selectedList={departmentId} setSelectedList={handleSelected}/>
+          <SelectDepartments loading={hasId} isMultiple={false} selectedList={departmentId} setSelectedList={handleSelected}/>
         </LabelInput>
       </Form.Item>
       <Form.Item>
