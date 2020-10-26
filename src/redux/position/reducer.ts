@@ -2,10 +2,13 @@ import {
   PositionAction, PositionState,
   SET_POSITION_FETCHED,
   SET_POSITION_FETCHING,
+  SET_POSITION_PAGE_NUMBER,
+  SET_POSITION_PAGE_SIZE,
   SET_POSITION_UPDATED,
   SET_POSITION_UPDATING,
   SET_SEARCH_DEPARTMENT_IDS,
-  SET_SEARCH_POSITION_NAME
+  SET_SEARCH_POSITION_NAME,
+  SET_FETCHED_POSITION_RESULT
 } from "./types";
 
 const initialState: PositionState = {
@@ -14,7 +17,18 @@ const initialState: PositionState = {
   searchInfo: {
     departmentIds: [],
     positionName: undefined
-  }
+  },
+  fetchedList: {
+    list: [],
+    total: 0
+  },
+  listPageNumber: 1,
+  listPageSize: 10,
+  currentPageList: []
+}
+
+function getPageList<T> (array: T[], pageNumber: number, pageSize: number): T[] {
+  return array.slice(pageSize * (pageNumber - 1), pageSize * pageNumber)
 }
 
 const positionReducer = (state = initialState, action: PositionAction): PositionState => {
@@ -47,6 +61,39 @@ const positionReducer = (state = initialState, action: PositionAction): Position
       searchInfo: {
         ...state.searchInfo,
         positionName: action.payload
+      }
+    }
+    case SET_POSITION_PAGE_NUMBER: {
+      const pageNumber = action.payload
+      const pageSize = state.listPageSize
+      const currentList = getPageList(state.fetchedList.list, pageNumber, pageSize)
+      return {
+        ...state,
+        currentPageList: currentList,
+        listPageNumber: pageNumber
+      }
+    }
+    case SET_POSITION_PAGE_SIZE: {
+      const pageNumber = state.listPageNumber
+      const pageSize = action.payload
+      const currentList = getPageList(state.fetchedList.list, pageNumber, pageSize)
+      return {
+        ...state,
+        currentPageList: currentList,
+        listPageSize: pageSize
+      }
+    }
+    case SET_FETCHED_POSITION_RESULT: {
+      const pageNumber = state.listPageNumber
+      const pageSize = state.listPageSize
+      const currentList = getPageList(action.payload.list, pageNumber, pageSize)
+      return {
+        ...state,
+        currentPageList: currentList,
+        fetchedList: {
+          list: action.payload.list,
+          total: action.payload.total
+        }
       }
     }
     default: return state

@@ -1,6 +1,7 @@
 import React from 'react'
 
 import ListSearchForm from '../../components/PositionView/ListSearchForm'
+import ListTable from '../../components/PositionView/ListTable'
 import { ListViewContent, ListViewFooter, ListViewHeader, ListViewWrapper } from '../../components/styled-elements'
 
 const PositionListView = () => {
@@ -11,7 +12,7 @@ const PositionListView = () => {
       </ListViewHeader>
       <ListViewContent>
         <ListViewHeader>
-          {/* <ListTable/> */}
+          <ListTable/>
         </ListViewHeader>
         <ListViewFooter>
           {/* <DeleteManyBtn/> */}
