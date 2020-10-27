@@ -37,3 +37,29 @@ export function createObjList<T> (list: Array<T>, prefix: string = ''): CreateOb
   })
   return retVal
 }
+
+export type DebounceProcedure = (...args: any[]) => void
+export type DebounceOptions = {
+  isImmediate: boolean,
+}
+export type DebounceResult<F extends DebounceProcedure> = (this: ThisParameterType<F>, ...args: Parameters<F>) => void
+export function debounce<F extends DebounceProcedure> (fn: F, waitMilliseconds: number = 50, options: DebounceOptions = { isImmediate: false }): DebounceResult<F> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  return function (this: ThisParameterType<F>, ...args: Parameters<F>) {
+    const context = this
+    const doLater = function() {
+      timer = undefined
+      if (!options.isImmediate) {
+        fn.apply(context, args)
+      }
+    }
+    const shouldCallNow = options.isImmediate && timer === undefined
+    if (timer !== undefined) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(doLater, waitMilliseconds);
+    if (shouldCallNow) {
+      fn.apply(context, args)
+    }
+  }
+}

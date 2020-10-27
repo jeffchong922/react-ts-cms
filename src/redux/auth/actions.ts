@@ -13,7 +13,7 @@ import {
   LOGOUT
 } from './types'
 
-const setUserInfo = (userInfo: UserInfo): AuthAction => ({
+export const setUserInfo = (userInfo: UserInfo): AuthAction => ({
   type: SET_USER_INFO,
   payload: userInfo
 })
